@@ -1,0 +1,277 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Atipria website</title>
+  <link rel="icon" type="image/x-icon" href="Data/webdesign/Atipria_logo-removebg-preview.png">
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="payment.css">
+  <link rel="stylesheet" href="Media.css">
+ </head>
+ <body class="bg-black text-white">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar -->
+        <div class="custom-sidebar" id="sidebar">
+            <img alt="AI assistant icon" class="custom-aiAssist-icon" src="Data/webdesign/images.jpeg"/>
+            <h1 class="sidebar-title" id="sidebar-title">AI Assist</h1>
+            <p class="sidebar-description" id="sidebar-description">Your AI-powered assistant</p>
+            <p class="sidebar-location" id="sidebar-location">Online, Everywhere</p>
+            <button class="Work_Together-button" id="work-together-button">Let's Work Together</button>
+
+            <div id="chat-section" class="hidden">
+                <h2 id="chat-title">Chat with AI</h2>
+
+                <div id="chat-box">
+                    <div class="message">
+                        <strong>AI:</strong> Hello! How can I assist you today?
+                    </div>
+                </div>
+
+                <div id="input-section">
+                    <select id="user-input">
+                        <option value="" disabled selected>Select an option...</option>
+                        <option value="project">I need help with my project</option>
+                        <option value="information">I need information</option>
+                        <option value="support">I need support</option>
+                    </select>
+                    <button id="send-button">Send</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Main Content Section -->
+        <div class="flex-1 p-6 relative">
+            <nav class="flex justify-between items-center mb-8 px-6 py-4 bg-gradient-to-r from-[#1F2A36] to-[#1F2A36]">
+                <div class="flex items-center">
+                    <a href="#">
+                      <img alt="Company logo" class="custom-logo" src="Data/webdesign/Atipria_logo-removebg-preview.png"/>
+                    </a>
+                </div>
+                <ul class="flex space-x-6">
+                    <li><a class="nav-link" href="#" id="nav-home">Home</a></li>
+                    <li><a class="nav-link" href="#" id="nav-portfolio">Portfolio</a></li>
+                    <li><a class="nav-link" href="#" id="nav-about">About</a></li>
+                    <li><a class="nav-link" href="#" id="nav-contact">Contact</a></li>
+                    <li><a class="nav-link" href="#" id="nav-pricing">Pricing</a></li>
+                </ul>
+                <div class="flex space-x-4">
+                    <button class="nav-button download-btn">Download</button>
+                    <button class="nav-button toggle-btn" id="toggle-theme">Toggle Theme</button>
+                </div>
+            </nav>
+
+            <!-- Main Section -->
+            <div class="flex flex-col items-start mt-60" id="main-content">
+                <p class="text-gray-400 mb-2" id="welcome-text">👋 Welcome</p>
+                <h1 class="text-4xl md:text-6xl font-bold mb-4" id="main-title"></h1>
+                <h2 class="text-2xl md:text-4xl font-bold text-gray-400 mb-8" id="main-subtitle">Your ultimate digital security solution in the modern age! We protect you from seeing false content and from selling your personal information to external and unnecessary companies.</h2>
+              <div class="flex space-x-4">
+                <button id="learnMoreBtn" class="px-4 py-2 bg-gray-800 text-white rounded-full">Learn More <i class="fas fa-arrow-right ml-2"></i></button>
+                <button class="px-4 py-2 bg-gray-800 text-white rounded-full" id="getStartedBtn" onclick="toggleTable()">Get Started <i class="fas fa-download ml-2"></i></button>
+              </div>
+            </div>
+
+            <table id="versionTable" class="hidden mt-8 table-auto w-full">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 text-left text-gray-400">Version</th>
+                        <th class="px-4 py-2 text-left text-gray-400">Description</th>
+                        <th class="px-4 py-2 text-left text-gray-400">Download - Coming soon</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="px-4 py-2">1.0.0</td>
+                        <td class="px-4 py-2">First version of the plugin</td>
+                        <td class="px-4 py-2"><button class="px-4 py-2 bg-gray-800 text-white rounded-full" onclick="installVersion('1.0.0')">Download</button></td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2">1.1.0</td>
+                        <td class="px-4 py-2">Bug fixes and improvements</td>
+                        <td class="px-4 py-2"><button class="px-4 py-2 bg-gray-800 text-white rounded-full" onclick="installVersion('1.1.0')">Download</button></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="additionalContentSideBySide" class="hidden mt-8 opacity-0 transform -translate-y-4 transition-all duration-500">
+              <h2 class="text-xl font-bold mb-2 text-center text-white">Fake vs. Real Content Comparison</h2>
+                <p class="fake-vs-real-info">
+                  In this section, we present a direct comparison between fake content and authentic content.<br>
+                  The goal is to highlight the clear differences between the two types of content and emphasize the challenges in identifying fake content.<br>
+                  By displaying images or examples of both fake and real content side by side, you can better understand how <br>
+                  to distinguish between genuine content and content that claims to be real but is actually fake.<br>
+                  Such a comparison can help raise awareness about recognizing fake content online and enhance the understanding <br>
+                  of different ways to identify the differences between content types.
+                </p>
+
+                <div class="flex flex-col space-y-6">
+                  <!-- זוג 1 -->
+                  <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flex-1">
+                      <img src="Data/images/fake/fake_image_1.jpg" alt="Fake Content 1" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Fake Content 1</p>
+                    </div>
+                    <div class="flex-1">
+                      <img src="Data/images/real/real_image_1.jpg" alt="Real Content 1" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Real Content 1</p>
+                    </div>
+                  </div>
+                  <!-- זוג 2 -->
+                  <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flex-1">
+                      <img src="Data/images/fake/fake_image_2.jpg" alt="Fake Content 2" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Fake Content 2</p>
+                    </div>
+                    <div class="flex-1">
+                      <img src="Data/images/real/real_image_2.jpg" alt="Real Content 2" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Real Content 2</p>
+                    </div>
+                  </div>
+                  <!-- זוג 3 -->
+                  <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flex-1">
+                      <img src="Data/images/fake/fake_image_3.jpg" alt="Fake Content 3" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Fake Content 3</p>
+                    </div>
+                    <div class="flex-1">
+                      <img src="Data/images/real/real_image_3.jpg" alt="Real Content 3" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Real Content 3</p>
+                    </div>
+                  </div>
+                  <!-- זוג 4 -->
+                  <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flex-1">
+                      <img src="Data/images/fake/fake_image_4.jpg" alt="Fake Content 4" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Fake Content 4</p>
+                    </div>
+                    <div class="flex-1">
+                      <img src="Data/images/real/real_image_4.jpg" alt="Real Content 4" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Real Content 4</p>
+                    </div>
+                  </div>
+                  <!-- זוג 5 -->
+                  <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flex-1">
+                      <img src="Data/images/fake/fake_image_5.jpg" alt="Fake Content 5" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Fake Content 5</p>
+                    </div>
+                    <div class="flex-1">
+                      <img src="Data/images/real/real_image_5.jpg" alt="Real Content 5" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Real Content 5</p>
+                    </div>
+                  </div>
+                  <!-- זוג 6 -->
+                  <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flex-1">
+                      <img src="Data/images/fake/fake_image_6.jpg" alt="Fake Content 6" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Fake Content 6</p>
+                    </div>
+                    <div class="flex-1">
+                      <img src="Data/images/real/real_image_6.jpg" alt="Real Content 6" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Real Content 6</p>
+                    </div>
+                  </div>
+                  <!-- זוג 7 -->
+                  <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flex-1">
+                      <img src="Data/images/fake/fake_image_7.jpg" alt="Fake Content 7" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Fake Content 7</p>
+                    </div>
+                    <div class="flex-1">
+                      <img src="Data/images/real/real_image_7.jpg" alt="Real Content 7" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Real Content 7</p>
+                    </div>
+                  </div>
+                  <!-- זוג 8 -->
+                  <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flex-1">
+                      <img src="Data/images/fake/fake_image_8.jpg" alt="Fake Content 8" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Fake Content 8</p>
+                    </div>
+                    <div class="flex-1">
+                      <img src="Data/images/real/real_image_8.jpg" alt="Real Content 8" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Real Content 8</p>
+                    </div>
+                  </div>
+                  <!-- זוג 9 -->
+                  <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flex-1">
+                      <img src="Data/images/fake/fake_image_9.jpg" alt="Fake Content 9" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Fake Content 9</p>
+                    </div>
+                    <div class="flex-1">
+                      <img src="Data/images/real/real_image_9.jpg" alt="Real Content 9" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Real Content 9</p>
+                    </div>
+                  </div>
+                  <!-- זוג 10 -->
+                  <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="flex-1">
+                      <img src="Data/images/fake/fake_image_10.jpg" alt="Fake Content 10" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Fake Content 10</p>
+                    </div>
+                    <div class="flex-1">
+                      <img src="Data/images/real/real_image_10.jpg" alt="Real Content 10" class="w-full h-auto rounded-lg shadow-lg">
+                      <p class="text-center text-gray-400 mt-2">Real Content 10</p>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+  <script src="JAVA/data toggle.js"></script>
+  <script src="JAVA/Assist.js"></script>
+  <script src="JAVA/welcome.js"></script>
+  <script src="JAVA/Dust.js"></script>
+  <script src="JAVA/open category.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentPage = window.location.pathname;
+
+        navLinks.forEach(link => {
+            const linkPage = link.getAttribute('href');
+
+            if (currentPage === linkPage) {
+                link.classList.add('active');
+            }
+
+            link.addEventListener('click', () => {
+                navLinks.forEach(link => link.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+    });
+
+    function toggleTable() {
+        var versionTable = document.getElementById('versionTable');
+        versionTable.classList.toggle('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const versionTable = document.getElementById('versionTable');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (!versionTable.classList.contains('hidden')) {
+                    versionTable.classList.add('hidden');
+                }
+
+                navLinks.forEach(link => link.classList.remove('active'));
+
+                link.classList.add('active');
+            });
+        });
+    });
+
+  </script>
+ </body>
+</html>
