@@ -60,7 +60,7 @@
                     <li><a class="nav-link" href="#" id="nav-pricing">Pricing</a></li>
                 </ul>
                 <div class="flex space-x-4">
-                    <button class="nav-button download-btn">Download</button>
+                    <button id="download-btn" class="nav-button download-btn">Get Start</button>
                     <button class="nav-button toggle-btn" id="toggle-theme">Toggle Theme</button>
                 </div>
             </nav>
@@ -81,7 +81,7 @@
                     <tr>
                         <th class="px-4 py-2 text-left text-gray-400">Version</th>
                         <th class="px-4 py-2 text-left text-gray-400">Description</th>
-                        <th class="px-4 py-2 text-left text-gray-400">Download - Coming soon</th>
+                        <th class="px-4 py-2 text-left text-gray-400">Download</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -92,7 +92,7 @@
                     </tr>
                     <tr>
                         <td class="px-4 py-2">1.1.0</td>
-                        <td class="px-4 py-2">Bug fixes and improvements</td>
+                        <td class="px-4 py-2">Bug fixes and improvements + Side 3 scan</td>
                         <td class="px-4 py-2"><button class="px-4 py-2 bg-gray-800 text-white rounded-full" onclick="installVersion('1.1.0')">Download</button></td>
                     </tr>
                 </tbody>
@@ -232,49 +232,94 @@
   <script src="JAVA/Dust.js"></script>
   <script src="JAVA/open category.js"></script>
   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentPage = window.location.pathname;
+
+        navLinks.forEach(link => {
+            const linkPage = link.getAttribute('href');
+
+            if (currentPage === linkPage) {
+                link.classList.add('active');
+            }
+
+            link.addEventListener('click', () => {
+                navLinks.forEach(link => link.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+    });
+
+    function toggleTable() {
+        var versionTable = document.getElementById('versionTable');
+        versionTable.classList.toggle('hidden');
+    }
+
+    function installVersion(version) {
+      var filePath = "Versions/Atipria (" + version + ").rar";
+      window.location.href = filePath;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const versionTable = document.getElementById('versionTable');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (!versionTable.classList.contains('hidden')) {
+                    versionTable.classList.add('hidden');
+                }
+
+                navLinks.forEach(link => link.classList.remove('active'));
+
+                link.classList.add('active');
+            });
+        });
+    });
+
     function typeWriter(element, text, speed) {
         let i = 0;
         let cursor = document.getElementById('cursor');
         let interval = setInterval(function() {
             element.innerHTML = text.substring(0, i) + "<span class='cursor'>|</span>";
             i++;
-    
+
             if (i > text.length) {
                 clearInterval(interval);
                 cursor.style.display = 'none';
             }
         }, speed);
     }
-    
+
     function changeContent(content) {
         var mainContent = document.getElementById('main-content');
         var learnMoreContent = document.getElementById('additionalContentSideBySide');
-    
+
         mainContent.style.opacity = 0;
-    
+
         setTimeout(function() {
             mainContent.innerHTML = content;
-    
+
             if (learnMoreContent && !learnMoreContent.classList.contains('hidden')) {
                 learnMoreContent.classList.remove('show');
                 setTimeout(function() {
                     learnMoreContent.classList.add('hidden');
                 }, 500);
             }
-    
+
             var learnMoreBtn = document.getElementById('learnMoreBtn');
             if (learnMoreBtn) {
                 learnMoreBtn.removeEventListener('click', handleLearnMoreClick);
                 learnMoreBtn.addEventListener('click', handleLearnMoreClick);
             }
-    
+
             const mainTitle = document.getElementById('main-title');
             typeWriter(mainTitle, "Welcome to Atipria Protection System!", 100);
-    
+
             mainContent.style.opacity = 1;
         }, 300);
     }
-    
+
     function handleLearnMoreClick() {
         var learnMoreContent = document.getElementById('additionalContentSideBySide');
         if (learnMoreContent.classList.contains('hidden')) {
@@ -289,7 +334,7 @@
             }, 500);
         }
     }
-    
+
     document.getElementById('nav-home').addEventListener('click', function() {
         changeContent(`
             <p class="text-gray-400 mb-2" id="welcome-text">👋 Welcome</p>
@@ -301,7 +346,7 @@
             </div>
         `);
     });
-    
+
     document.getElementById('nav-portfolio').addEventListener('click', function() {
         changeContent(`
             <h1 class="text-4xl md:text-6xl font-bold mb-4">Portfolio</h1>
@@ -326,7 +371,7 @@
             </div>
         `);
     });
-    
+
     document.getElementById('nav-about').addEventListener('click', function() {
         changeContent(`
             <h1 class="text-4xl md:text-6xl font-bold mb-4">About Us</h1>
@@ -362,7 +407,7 @@
             </div>
         `);
     });
-    
+
     document.getElementById('nav-contact').addEventListener('click', function() {
       changeContent(`
           <h2 class="text-4xl md:text-6xl font-bold mb-4">Contact Us</h2>
@@ -370,33 +415,33 @@
           <form id="contact-form" class="max-w-lg mx-auto bg-gray-900 p-6 rounded-lg shadow-lg">
               <label class="block text-white text-lg mb-2">Name</label>
               <input type="text" id="name" class="w-full p-2 mb-4 rounded bg-gray-800 text-white border border-gray-700" placeholder="Enter your name">
-    
+
               <label class="block text-white text-lg mb-2">Email</label>
               <input type="email" id="email" class="w-full p-2 mb-4 rounded bg-gray-800 text-white border border-gray-700" placeholder="Enter your email">
-    
+
               <label class="block text-white text-lg mb-2">Message</label>
               <textarea id="message" class="w-full p-2 mb-4 rounded bg-gray-800 text-white border border-gray-700" rows="4" placeholder="Your message"></textarea>
-    
+
               <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">
                 Send Message <i class="fas fa-paper-plane ml-2"></i>
               </button>
           </form>
       `);
-    
+
       setTimeout(() => {
         const form = document.getElementById('contact-form');
         if (!form) return;
         form.addEventListener('submit', async (event) => {
           event.preventDefault();
-    
+
           const name = document.getElementById('name').value.trim();
           const email = document.getElementById('email').value.trim();
           const message = document.getElementById('message').value.trim();
-    
+
           emailjs.init("your_user_id");
-    
+
           const templateParams = { name, email, message };
-    
+
           try {
             const response = await emailjs.send('your_service_id', 'your_template_id', templateParams);
             console.log("Email sent successfully:", response);
@@ -408,7 +453,7 @@
         });
       }, 0);
     });
-    
+
     document.getElementById('nav-pricing').addEventListener('click', function() {
         changeContent(`
             <h1 class="Main-pricing-title">Pricing Plans</h1>
@@ -487,7 +532,7 @@
                     </button>
                 </div>
             </div>
-    
+
             <!-- Modal HTML -->
             <div id="purchase-modal">
                 <div class="modal-wrapper">
@@ -575,18 +620,18 @@
                 </div>
             </div>
         `);
-    
+
         document.addEventListener('click', function(event) {
             if (event.target.matches('.plan-btn')) {
                 const btn = event.target;
                 const planTitle = btn.getAttribute('data-plan-title');
                 const planPrice = btn.getAttribute('data-plan-price');
                 const planDetails = btn.getAttribute('data-plan-details');
-    
+
                 const modal = document.getElementById('purchase-modal');
                 modal.querySelector('.modal-left .payment-info .plan-name').innerText = planTitle;
                 modal.querySelector('.modal-left .payment-info .plan-price').innerText = planPrice;
-    
+
                 const detailsList = modal.querySelector('.modal-left .payment-info .package-list');
                 detailsList.innerHTML = '';
                 if (planDetails) {
@@ -596,15 +641,15 @@
                         detailsList.appendChild(li);
                     });
                 }
-    
+
                 modal.style.display = 'block';
             }
-    
+
             if (event.target.matches('#close-modal')) {
                 document.getElementById('purchase-modal').style.display = 'none';
             }
         });
-    
+
         window.addEventListener('click', function(event) {
             const modal = document.getElementById('purchase-modal');
             if (event.target === modal) {
@@ -612,49 +657,9 @@
             }
         });
     });
-    
+
     document.querySelector('.download-btn').addEventListener('click', function() {
         document.getElementById('nav-pricing').click();
-    });
-       
-    document.addEventListener('DOMContentLoaded', function () {
-        const navLinks = document.querySelectorAll('.nav-link');
-        const currentPage = window.location.pathname;
-
-        navLinks.forEach(link => {
-            const linkPage = link.getAttribute('href');
-
-            if (currentPage === linkPage) {
-                link.classList.add('active');
-            }
-
-            link.addEventListener('click', () => {
-                navLinks.forEach(link => link.classList.remove('active'));
-                link.classList.add('active');
-            });
-        });
-    });
-
-    function toggleTable() {
-        var versionTable = document.getElementById('versionTable');
-        versionTable.classList.toggle('hidden');
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const navLinks = document.querySelectorAll('.nav-link');
-        const versionTable = document.getElementById('versionTable');
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                if (!versionTable.classList.contains('hidden')) {
-                    versionTable.classList.add('hidden');
-                }
-
-                navLinks.forEach(link => link.classList.remove('active'));
-
-                link.classList.add('active');
-            });
-        });
     });
 
   </script>
