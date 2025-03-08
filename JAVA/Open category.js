@@ -1,15 +1,33 @@
-function typeWriter(element, text, speed) {
-    let i = 0;
-    let cursor = document.getElementById('cursor');
-    let interval = setInterval(function() {
-        element.innerHTML = text.substring(0, i) + "<span class='cursor'>|</span>";
-        i++;
+function typeWriterCycle(element, texts, typingSpeed, erasingSpeed, pauseTime) {
+    let currentTextIndex = 0;
+    let charIndex = 0;
+    let isErasing = false;
 
-        if (i > text.length) {
-            clearInterval(interval);
-            cursor.style.display = 'none';
+    function run() {
+        if (!isErasing) {
+            element.innerHTML = texts[currentTextIndex].substring(0, charIndex) + "<span class='cursor'>|</span>";
+            if (charIndex < texts[currentTextIndex].length) {
+                charIndex++;
+                setTimeout(run, typingSpeed);
+            } else {
+                setTimeout(() => {
+                    isErasing = true;
+                    run();
+                }, pauseTime);
+            }
+        } else {
+            element.innerHTML = texts[currentTextIndex].substring(0, charIndex) + "<span class='cursor'>|</span>";
+            if (charIndex > 0) {
+                charIndex--;
+                setTimeout(run, erasingSpeed);
+            } else {
+                isErasing = false;
+                currentTextIndex = (currentTextIndex + 1) % texts.length;
+                setTimeout(run, pauseTime);
+            }
         }
-    }, speed);
+    }
+    run();
 }
 
 function changeContent(content) {
@@ -35,7 +53,19 @@ function changeContent(content) {
         }
 
         const mainTitle = document.getElementById('main-title');
-        typeWriter(mainTitle, "Welcome to Atipria Protection System!", 100);
+        if (mainTitle) {
+            const texts = [
+                "Welcome to Atipria Protection System!",
+                "Your security is our priority!",
+                "Atipria: Protection, reliability, peace of mind!",
+                "Guarding your digital world!",
+                "Securing what matters most!",
+                "Welcome to the future of protection!"
+            ];
+            typeWriterCycle(mainTitle, texts, 100, 50, 1000);
+        } else {
+            console.error("Element with id 'main-title' not found.");
+        }
 
         mainContent.style.opacity = 1;
     }, 300);
@@ -100,11 +130,11 @@ document.getElementById('nav-about').addEventListener('click', function() {
         <div class="flex flex-col space-y-4">
             <div class="bg-gray-800 p-4 rounded-lg">
                 <h3 class="text-xl font-bold mb-2">Our Mission</h3>
-                <p class="text-gray-400">At Atipria, our mission is to provide advanced AI solutions to detect deepfakes and ensure the authenticity of digital content, <br> while safeguarding user privacy and preventing misuse of content on social media platforms.</p>
+                <p class="text-gray-400">At Atipria, our mission is to provide advanced AI solutions to detect deepfakes and ensure the authenticity of digital content,<br> while safeguarding user privacy and preventing misuse of content on social media platforms.</p>
             </div>
             <div class="bg-gray-800 p-4 rounded-lg">
                 <h3 class="text-xl font-bold mb-2">Our Values</h3>
-                <p class="text-gray-400">We prioritize integrity, innovation, and excellence in everything we do. Our goal is to create a safer digital world by developing advanced <br> technologies that protect user privacy and ensure the authenticity of digital content. Through continuous innovation, we strive to provide <br> solutions that address the ever-evolving challenges in the digital landscape, fostering trust and security for individuals and organizations alike.</p>
+                <p class="text-gray-400">We prioritize integrity, innovation, and excellence in everything we do. Our goal is to create a safer digital world by developing advanced<br> technologies that protect user privacy and ensure the authenticity of digital content.</p>
             </div>
             <div class="founders-container">
               <h3>Our Founders</h3>
@@ -114,14 +144,14 @@ document.getElementById('nav-about').addEventListener('click', function() {
                 </a>
                 <div>
                   <h4>Avital Gladkih - CEO</h4>
-                  <p>Avital is a creative and innovative entrepreneur with a passion for art and technology. She is committed to promoting new ventures and ideas, particularly in Israeli society and beyond.</p>
+                  <p>Avital is a creative and innovative entrepreneur with a passion for art and technology.</p>
                 </div>
               </div>
               <div class="founder-item">
                 <img src="Data/webdesign/daniel-cmo.png" alt="Founder 2">
                 <div>
                   <h4>Daniel Biton - CMO</h4>
-                  <p>Daniel is a visionary entrepreneur with a background in computer science. She is dedicated to driving innovation and excellence at Atipria.</p>
+                  <p>Daniel is a visionary entrepreneur with a background in computer science.</p>
                 </div>
               </div>
             </div>
@@ -130,49 +160,42 @@ document.getElementById('nav-about').addEventListener('click', function() {
 });
 
 document.getElementById('nav-contact').addEventListener('click', function() {
-  changeContent(`
+    changeContent(`
       <h2 class="text-4xl md:text-6xl font-bold mb-4">Contact Us</h2>
       <p class="text-2xl md:text-4xl font-bold text-gray-400 mb-8">Get in touch with us for any inquiries or support.</p>
       <form id="contact-form" class="max-w-lg mx-auto bg-gray-900 p-6 rounded-lg shadow-lg">
           <label class="block text-white text-lg mb-2">Name</label>
           <input type="text" id="name" class="w-full p-2 mb-4 rounded bg-gray-800 text-white border border-gray-700" placeholder="Enter your name">
-
           <label class="block text-white text-lg mb-2">Email</label>
           <input type="email" id="email" class="w-full p-2 mb-4 rounded bg-gray-800 text-white border border-gray-700" placeholder="Enter your email">
-
           <label class="block text-white text-lg mb-2">Message</label>
           <textarea id="message" class="w-full p-2 mb-4 rounded bg-gray-800 text-white border border-gray-700" rows="4" placeholder="Your message"></textarea>
-
           <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition">
             Send Message <i class="fas fa-paper-plane ml-2"></i>
           </button>
       </form>
-  `);
+    `);
 
-  setTimeout(() => {
-    const form = document.getElementById('contact-form');
-    if (!form) return;
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const message = document.getElementById('message').value.trim();
-
-      emailjs.init("your_user_id");
-
-      const templateParams = { name, email, message };
-
-      try {
-        const response = await emailjs.send('your_service_id', 'your_template_id', templateParams);
-        console.log("Email sent successfully:", response);
-        alert("Thank you for reaching out! We will get back to you soon.");
-      } catch (error) {
-        console.error("Error sending email:", error);
-        alert("Oops! Something went wrong. Please try again.");
-      }
-    });
-  }, 0);
+    setTimeout(() => {
+      const form = document.getElementById('contact-form');
+      if (!form) return;
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const message = document.getElementById('message').value.trim();
+        emailjs.init("your_user_id");
+        const templateParams = { name, email, message };
+        try {
+          const response = await emailjs.send('your_service_id', 'your_template_id', templateParams);
+          console.log("Email sent successfully:", response);
+          alert("Thank you for reaching out! We will get back to you soon.");
+        } catch (error) {
+          console.error("Error sending email:", error);
+          alert("Oops! Something went wrong. Please try again.");
+        }
+      });
+    }, 0);
 });
 
 document.getElementById('nav-pricing').addEventListener('click', function() {
@@ -277,7 +300,7 @@ document.getElementById('nav-pricing').addEventListener('click', function() {
                               <img alt="Discover logo" src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Discover.png"/>
                             </div>
                         </div>
-                        <form>
+                        <form id="payment-form">
                             <div class="form-group">
                                 <label>Credit card number</label>
                                 <input id="creditCardInput" type="number" placeholder="4584 -" maxlength="16">
@@ -285,7 +308,8 @@ document.getElementById('nav-pricing').addEventListener('click', function() {
                             <div class="form-row">
                                 <div class="form-group half">
                                     <label>Expiration</label>
-                                    <select>
+                                    <select id="expiration-month">
+                                        <option value="">Month</option>
                                         <option>January</option>
                                         <option>February</option>
                                         <option>March</option>
@@ -302,7 +326,8 @@ document.getElementById('nav-pricing').addEventListener('click', function() {
                                 </div>
                                 <div class="form-group half">
                                     <label>Year</label>
-                                    <select>
+                                    <select id="expiration-year">
+                                        <option value="">Year</option>
                                         <option>2023</option>
                                         <option>2024</option>
                                         <option>2025</option>
@@ -316,11 +341,12 @@ document.getElementById('nav-pricing').addEventListener('click', function() {
                             </div>
                             <div class="form-group">
                                 <label>CVC/CVV</label>
-                                <input type="number" placeholder="3 or 4 digits code" maxlength="4">
+                                <input id="cvcInput" type="number" placeholder="3 or 4 digits code" maxlength="4">
                             </div>
                             <div class="form-group">
                                 <label>Supported Companies</label>
-                                <select>
+                                <select id="supported-company">
+                                    <option value="">Select Company</option>
                                     <option>Visa</option>
                                     <option>MasterCard</option>
                                     <option>American Express</option>
@@ -332,6 +358,8 @@ document.getElementById('nav-pricing').addEventListener('click', function() {
                             </div>
                             <button type="submit" class="pay-now-btn">Pay Now</button>
                         </form>
+                        <!-- Element for payment feedback -->
+                        <div id="payment-feedback"></div>
                         <div class="alternate-payment">
                             <p>or select other payment method</p>
                             <button class="paypal-btn">Pay with <span class="font-bold">PayPal</span></button>
@@ -362,7 +390,7 @@ document.getElementById('nav-pricing').addEventListener('click', function() {
                     detailsList.appendChild(li);
                 });
             }
-
+            modal.setAttribute('data-selected-plan', planTitle);
             modal.style.display = 'block';
         }
 
@@ -375,6 +403,58 @@ document.getElementById('nav-pricing').addEventListener('click', function() {
         const modal = document.getElementById('purchase-modal');
         if (event.target === modal) {
             modal.style.display = 'none';
+        }
+    });
+
+    document.addEventListener('submit', function(e) {
+        if (e.target && e.target.id === 'payment-form') {
+            e.preventDefault();
+
+            const creditCard = document.getElementById('creditCardInput').value.trim();
+            const expirationMonth = document.getElementById('expiration-month').value.trim();
+            const expirationYear = document.getElementById('expiration-year').value.trim();
+            const cvc = document.getElementById('cvcInput').value.trim();
+            const supportedCompany = document.getElementById('supported-company').value.trim();
+
+            let missingFields = [];
+            if (!creditCard) missingFields.push("Credit Card Number");
+            if (!expirationMonth) missingFields.push("Expiration Month");
+            if (!expirationYear) missingFields.push("Expiration Year");
+            if (!cvc) missingFields.push("CVC/CVV");
+            if (!supportedCompany) missingFields.push("Supported Company");
+
+            const feedback = document.getElementById('payment-feedback');
+            feedback.innerHTML = '';
+            feedback.className = '';
+
+            if (missingFields.length > 0) {
+                feedback.innerHTML = `<span class="error-icon">✖</span> Missing required fields: ${missingFields.join(', ')}`;
+                feedback.classList.add('shake');
+                return;
+            }
+
+            feedback.innerHTML = 'Processing...';
+            setTimeout(() => {
+                const paymentSuccess = true;
+
+                if (paymentSuccess) {
+                    feedback.innerHTML = `<span class="success-icon">✔</span> Payment successful!`;
+                    feedback.classList.add('success-animation');
+
+                    const modal = document.getElementById('purchase-modal');
+                    const selectedPlan = modal.getAttribute('data-selected-plan');
+                    localStorage.setItem("userPlan", selectedPlan);
+
+                    setTimeout(() => {
+                        const orderNumber = generateOrderNumber();
+                        alert(`Payment successful! Your plan (${selectedPlan}) has been activated.\nOrder Number: ${orderNumber}`);
+                        modal.style.display = 'none';
+                    }, 1500);
+                } else {
+                    feedback.innerHTML = `<span class="error-icon">✖</span> Payment failed! Please try again.`;
+                    feedback.classList.add('failure-animation');
+                }
+            }, 2000);
         }
     });
 });
