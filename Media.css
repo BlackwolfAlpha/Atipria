@@ -25,42 +25,11 @@
 }
 
 @media (max-width: 768px) {
-    nav {
-        width: 100%;
-        padding: 0 15px;
+    .nav-menu {
+        display: none;
     }
-
-    nav ul {
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-    }
-
-    .nav-link {
-        font-size: 16px;
-        padding: 0.5rem;
-    }
-
-    .nav-button {
-        font-size: 14px;
-        padding: 0.5rem 1rem;
-    }
-
-    .download-btn, .toggle-btn {
-        padding: 0.5rem 1rem;
-        font-size: 14px;
-    }
-
-    .download-btn, .toggle-btn {
-        width: 100%;
-        text-align: center;
-    }
-
-    .custom-sidebar {
-        width: 100%;
-        position: relative;
-        height: auto;
-        padding: 10px;
+    .hamburger {
+        display: block;
     }
 
     .custom-logo {
