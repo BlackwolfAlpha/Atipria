@@ -34,12 +34,6 @@ body.light-theme .dust {
     display: none;
 }
 
-
-.custom-logo {
-    width: 80px;
-    height: auto;
-}
-
 .cursor {
     font-size: 40px;
     color: #41F7FD;
@@ -57,6 +51,11 @@ body.light-theme .dust {
     100% {
         opacity: 1;
     }
+}
+
+.custom-logo {
+    width: 80px;
+    height: auto;
 }
 
 .nav-link {
@@ -86,6 +85,8 @@ body.light-theme .dust {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    border: none;
+    background: none;
 }
 
 .nav-button:hover {
@@ -101,16 +102,15 @@ nav {
     max-width: 1200px;
 }
 
-nav ul {
+.nav-menu {
     display: flex;
     gap: 20px;
 }
 
-nav ul li {
+.nav-menu li {
     list-style: none;
 }
 
-/* Button Styles */
 .download-btn {
     background: linear-gradient(to right, #41F7FD, #F8FFFE);
     color: black;
@@ -137,6 +137,45 @@ nav ul li {
 
 .toggle-btn:hover {
     background-color: #333;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hamburger {
+  display: none;
+  font-size: 24px;
+  color: #fff;
+}
+
+.mobile-menu {
+  display: none;
+  background-color: #333;
+  position: absolute;
+  top: 70px;
+  right: 10px;
+  width: 200px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-menu ul {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu li {
+    margin-bottom: 10px;
+}
+
+.mobile-menu li:last-child {
+    margin-bottom: 0;
 }
 
 /* SideBar design */
