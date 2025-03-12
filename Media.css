@@ -105,6 +105,39 @@
     }
 }
 
+@media (max-width: 768px) {
+  .world-map {
+    height: 300px;
+    max-width: 100%;
+    margin: 10px auto;
+  }
+
+  .popup {
+    font-size: 10px;
+    min-width: 120px;
+    padding: 8px 10px;
+  }
+
+  .interactive-map-top {
+    padding: 15px 20px;
+  }
+
+  .interactive-map-top h2 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .interactive-map-top p {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .map-point::before {
+    width: 14px;
+    height: 14px;
+  }
+}
+
 /* For extra small screens like smartphones in portrait mode */
 @media (max-width: 480px) {
     .nav-link {
