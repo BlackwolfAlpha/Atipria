@@ -593,3 +593,113 @@ img[src*="fake"]:hover {
   font-weight: bold;
   color: #edf2f7;
 }
+
+.world-map {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  height: 500px;
+  margin: 20px auto;
+  background: url('Data/webdesign/map.png') no-repeat center center;
+  background-size: cover;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.map-point {
+  position: absolute;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.map-point::before {
+  content: "";
+  display: block;
+  width: 16px;
+  height: 16px;
+  background-color: #41F7FD;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 2;
+}
+
+.popup {
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  min-width: 160px;
+  background: linear-gradient(to right, #41F7FD, #F8FFFE);
+  color: black;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  text-align: center;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.popup::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: #fff transparent;
+}
+
+.map-point:hover .popup {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+
+.interactive-map-top {
+  position: relative;
+  padding: 20px 30px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.interactive-map-top::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 4px;
+  background: linear-gradient(to right, #41F7FD, #F8FFFE);
+  z-index: -1;
+}
+
+.interactive-map-top h2 {
+  font-size: 28px;
+  margin: 0 0 10px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.interactive-map-top p {
+  font-size: 16px;
+  color: #fff;
+  line-height: 1.6;
+}
+
+.interactive-map-top strong {
+  color: #e74c3c;
+}
