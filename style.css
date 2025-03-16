@@ -265,7 +265,6 @@ body {
 }
 
 /* 📌 FAQ SECTION */
-/* 📌 עיצוב כללי */
 .faq, .interactive-map-container {
     text-align: center;
     padding: 3rem 8%;
@@ -319,7 +318,11 @@ body {
     padding: 10px 20px;
     background: rgba(0, 234, 255, 0.1);
     border-left: 4px solid #00eaff;
-    transition: max-height 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+.faq-answer.show {
+    display: table-row;
 }
 
 .world-map {
