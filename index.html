@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="payment.css">
     <link rel="stylesheet" href="Media.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <script type="text/javascript" src="https://cdn.emailjs.com/sdk/3.6.4/email.min.js"></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -75,7 +76,12 @@
                     <td>1.1.6</td>
                     <td>Doms + efficiency upgrade</td>
                     <td><button class="download-btn" onclick="installVersion('1.1.6')">Download</button></td>
-                </tr>                
+                </tr>
+                <tr>
+                    <td>1.1.7</td>
+                    <td>Continuous use fix + permanent interface creation</td>
+                    <td><button class="download-btn" onclick="installVersion('1.1.7')">Download</button></td>
+                </tr>
             </tbody>
         </table>
     </section>
@@ -635,25 +641,24 @@
         </div>
     </section>
 
-    <section id="contact">
+      <section id="contact">
         <h2>Contact Us</h2>
         <p>Get in touch with us for any inquiries or support.</p>
-
         <form id="contact-form">
-            <label for="name">Name</label>
-            <input type="text" id="name" placeholder="Enter your name">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Enter your name" required>
 
-            <label for="email">Email</label>
-            <input type="email" id="email" placeholder="Enter your email">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
-            <label for="message">Message</label>
-            <textarea id="message" rows="4" placeholder="Your message"></textarea>
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="4" placeholder="Your message" required></textarea>
 
-            <button type="submit">
-                Send Message <i class="fas fa-paper-plane"></i>
-            </button>
+          <button type="submit">
+            Send Message <i class="fas fa-paper-plane"></i>
+          </button>
         </form>
-    </section>
+      </section>
 
     <!-- FOOTER -->
     <footer class="footer">
@@ -661,6 +666,26 @@
     </footer>
 
 <script src="JAVA/welcome.js"></script>
+
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function() {
+    emailjs.init("JU3WF_cvPQycgSfmp");
+
+    document.getElementById('contact-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      emailjs.send("service_0neobz5", "template_uw9jrcq", {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        message: document.getElementById('message').value
+      }).then(function(response) {
+        alert("Thank you! Your message has been sent.");
+      }, function(error) {
+        alert("Oops! Something went wrong: " + JSON.stringify(error));
+      });
+    });
+  });
+</script>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const faqRows = document.querySelectorAll(".faq-row");
