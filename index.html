@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="payment.css">
     <link rel="stylesheet" href="Media.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <script type="text/javascript" src="https://cdn.emailjs.com/sdk/3.6.4/email.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -371,8 +371,10 @@
 
     <!-- PRICING PLANS -->
     <section class="pricing">
-        <h1 class="Main-pricing-title">Pricing Plans</h1>
-        <p class="Main-pricing-subtitle">Choose the best plan for your needs.</p>
+        <div class="titles">
+            <h1 class="Main-pricing-title">Pricing Plans</h1>
+            <p class="Main-pricing-subtitle">Choose the best plan for your needs.</p>
+        </div>
 
         <div class="pricing-grid">
             <!-- Free Plan -->
@@ -434,8 +436,10 @@
     </section>
 
     <section id="AboutUs">
-        <h1>About Us</h1>
-        <p>Learn more about our mission and values.</p>
+        <div class="titles">
+            <h1>About Us</h1>
+            <p>Learn more about our mission and values.</p>
+        </div>
 
         <div class="info-box">
             <h3>Our Mission</h3>
@@ -471,8 +475,10 @@
     </section>
 
     <section id="Pricing-page">
-        <h1 class="Main-pricing-title">Pricing Plans</h1>
-        <p class="Main-pricing-subtitle">Choose the best plan for your needs.</p>
+        <div class="titles">
+            <h1 class="Main-pricing-title">Pricing Plans</h1>
+            <p class="Main-pricing-subtitle">Choose the best plan for your needs.</p>
+        </div>
         <div class="pricing-grid">
             <!-- Free Plan -->
             <div class="pricing-card">
@@ -642,22 +648,29 @@
     </section>
 
       <section id="contact">
-        <h2>Contact Us</h2>
-        <p>Get in touch with us for any inquiries or support.</p>
+          <div class="titles">
+              <h2>Contact Us</h2>
+               <p>Get in touch with us for any inquiries or support.</p>
+          </div>
+
         <form id="contact-form">
-          <label for="name">Name</label>
+          <label for="name">Pls enter your name:</label>
           <input type="text" id="name" name="name" placeholder="Enter your name" required>
 
-          <label for="email">Email</label>
+          <label for="email">Pls enter your Email:</label>
           <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
-          <label for="message">Message</label>
+          <label for="message">Pls enter your request:</label>
           <textarea id="message" name="message" rows="4" placeholder="Your message" required></textarea>
 
           <button type="submit">
             Send Message <i class="fas fa-paper-plane"></i>
           </button>
         </form>
+
+        <div id="request-popup" class="request-popup">
+          <p id="popup-message"></p>
+        </div>
       </section>
 
     <!-- FOOTER -->
@@ -667,21 +680,35 @@
 
 <script src="JAVA/welcome.js"></script>
 
-<script type="text/javascript">
-  document.addEventListener("DOMContentLoaded", function() {
-    emailjs.init("JU3WF_cvPQycgSfmp");
+<script>
+  emailjs.init("JU3WF_cvPQycgSfmp");
 
-    document.getElementById('contact-form').addEventListener('submit', function(event) {
+  function showPopup(message) {
+    const popup = document.getElementById("request-popup");
+    const popupMessage = document.getElementById("popup-message");
+
+    popupMessage.textContent = message;
+    popup.classList.add("show");
+
+    setTimeout(() => {
+      popup.classList.remove("show");
+    }, 3000);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("contact-form");
+
+    form.addEventListener("submit", function (event) {
       event.preventDefault();
-      emailjs.send("service_0neobz5", "template_uw9jrcq", {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        message: document.getElementById('message').value
-      }).then(function(response) {
-        alert("Thank you! Your message has been sent.");
-      }, function(error) {
-        alert("Oops! Something went wrong: " + JSON.stringify(error));
-      });
+
+      emailjs.sendForm("default_service", "template_uw9jrcq", this)
+        .then(function () {
+          showPopup("✅The message was sent successfully, the support team will do their best to get back to you as soon as possible!");
+          form.reset();
+        }, function (error) {
+          showPopup("❌ An error occurred while sending the request, please try again.");
+          console.error("EmailJS Error:", error);
+        });
     });
   });
 </script>
