@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data: https:;">
     <link rel="icon" type="image/x-icon" href="Data/webdesign/Atipria_logo-removebg-preview.png">
     <title>Atipria website</title>
     <link rel="stylesheet" href="style.css">
@@ -712,6 +711,26 @@
         });
     });
   });
+
+  // מניעת פתיחת כלי המפתח
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  document.onkeydown = function(e) {
+    if (e.keyCode === 123) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+      return false;
+    }
+    if (e.ctrlKey && e.keyCode === 85) {
+      return false;
+    }
+  };
 </script>
 
 <script>
