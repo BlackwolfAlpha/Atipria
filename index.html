@@ -371,68 +371,75 @@
 
     <!-- PRICING PLANS -->
     <section class="pricing">
-        <div class="titles">
-            <h1 class="Main-pricing-title">Pricing Plans</h1>
-            <p class="Main-pricing-subtitle">Choose the best plan for your needs.</p>
+      <div class="titles">
+        <h1 class="Main-pricing-title">Pricing Plans</h1>
+        <p class="Main-pricing-subtitle">Choose the best plan for your needs.</p>
+      </div>
+
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3 class="plan-title">Free Plan</h3>
+          <p class="plan-description">Basic features for personal use.</p>
+          <p class="plan-price">$0 / month</p>
+          <ul class="plan-features">
+            <li>✔ Basic Deepfake Detection</li>
+            <li>✔ Limited Image Recognition</li>
+            <li>✖ Advanced Security Solutions</li>
+            <li>✔ Devices: 1 device</li>
+          </ul>
+          <button class="plan-btn get-started-btn">Get Started</button>
         </div>
 
-        <div class="pricing-grid">
-            <!-- Free Plan -->
-            <div class="pricing-card">
-                <h3 class="plan-title">Free Plan</h3>
-                <p class="plan-description">Basic features for personal use.</p>
-                <p class="plan-price">Price: $0 / month</p>
-                <ul class="plan-features">
-                    <li>✔ Basic Deepfake Detection</li>
-                    <li>✔ Limited Image Recognition</li>
-                    <li>✖ Advanced Security Solutions</li>
-                    <li>✔ Devices: 1 device</li>
-                </ul>
-                <button class="plan-btn get-started-btn">Get Started</button>
-            </div>
-
-            <!-- Premium Plan -->
-            <div class="pricing-card">
-                <h3 class="plan-title">Premium Plan</h3>
-                <p class="plan-description">Advanced features for professionals.</p>
-                <p class="plan-price">Price: $19.99 / month</p>
-                <ul class="plan-features">
-                    <li>✔ Advanced Deepfake Detection</li>
-                    <li>✔ Full Image Recognition</li>
-                    <li>✔ AI-Powered Security Solutions</li>
-                    <li>✔ Devices: Up to 5 devices</li>
-                </ul>
-                <button class="plan-btn upgrade-btn">Upgrade Now</button>
-            </div>
-
-            <!-- Business Plan -->
-            <div class="pricing-card">
-                <h3 class="plan-title">Business Plan</h3>
-                <p class="plan-description">Comprehensive solutions for businesses.</p>
-                <p class="plan-price">Price: $49.99 / month</p>
-                <ul class="plan-features">
-                    <li>✔ Enterprise Deepfake Detection</li>
-                    <li>✔ Bulk Image Processing</li>
-                    <li>✔ Custom AI Security Features</li>
-                    <li>✔ Devices: Up to 20 devices</li>
-                </ul>
-                <button class="plan-btn get-business-btn">Get Business</button>
-            </div>
-
-            <!-- Enterprise Plan -->
-            <div class="pricing-card">
-                <h3 class="plan-title">Enterprise Plan</h3>
-                <p class="plan-description">Ultimate security and AI solutions for enterprises.</p>
-                <p class="plan-price">Price: Contact Sales for pricing</p>
-                <ul class="plan-features">
-                    <li>✔ AI-Powered Deepfake & Fraud Detection</li>
-                    <li>✔ Unlimited Image Recognition</li>
-                    <li>✔ Dedicated AI Security Consultant</li>
-                    <li>✔ Devices: Unlimited devices</li>
-                </ul>
-                <button class="plan-btn contact-sales-btn">Contact Sales</button>
-            </div>
+        <div class="pricing-card">
+          <div class="discount-bubble">Sale!!</div>
+          <h3 class="plan-title">Premium Plan</h3>
+          <p class="plan-description">Advanced features for professionals.</p>
+          <p class="plan-price">
+            <span class="old-price">$19.99 / month</span>
+            <br>
+            <span class="new-price">$9.99 / month</span>
+          </p>
+          <ul class="plan-features">
+            <li>✔ Advanced Deepfake Detection</li>
+            <li>✔ Full Image Recognition</li>
+            <li>✔ AI-Powered Security Solutions</li>
+            <li>✔ Devices: Up to 5 devices</li>
+          </ul>
+          <button class="plan-btn upgrade-btn">Upgrade Now</button>
         </div>
+
+        <div class="pricing-card">
+          <div class="discount-bubble">Sale!!</div>
+          <h3 class="plan-title">Business Plan</h3>
+          <p class="plan-description">Comprehensive solutions for businesses.</p>
+          <p class="plan-price">
+            <span class="old-price">$49.99 / month</span>
+            <br>
+            <span class="new-price">$24.99 / month</span>
+          </p>
+          <ul class="plan-features">
+            <li>✔ Enterprise Deepfake Detection</li>
+            <li>✔ Bulk Image Processing</li>
+            <li>✔ Custom AI Security Features</li>
+            <li>✔ Devices: Up to 20 devices</li>
+          </ul>
+          <button class="plan-btn get-business-btn">Get Business</button>
+        </div>
+
+        <!-- Enterprise Plan -->
+        <div class="pricing-card">
+          <h3 class="plan-title">Enterprise Plan</h3>
+          <p class="plan-description">Ultimate security and AI solutions for enterprises.</p>
+          <p class="plan-price">Contact Sales for pricing</p>
+          <ul class="plan-features">
+            <li>✔ AI-Powered Deepfake & Fraud Detection</li>
+            <li>✔ Unlimited Image Recognition</li>
+            <li>✔ Dedicated AI Security Consultant</li>
+            <li>✔ Devices: Unlimited devices</li>
+          </ul>
+          <button class="plan-btn contact-sales-btn">Contact Sales</button>
+        </div>
+      </div>
     </section>
 
     <section id="AboutUs">
@@ -480,7 +487,7 @@
             <p class="Main-pricing-subtitle">Choose the best plan for your needs.</p>
         </div>
         <div class="pricing-grid">
-            <!-- Free Plan -->
+            <!-- Free Plan - ללא הנחה -->
             <div class="pricing-card">
                 <h3 class="plan-title">Free Plan</h3>
                 <p class="plan-description">Basic features for personal use.</p>
@@ -498,11 +505,15 @@
                     Get Started
                 </button>
             </div>
-            <!-- Premium Plan -->
+            <!-- Premium Plan עם הנחה -->
             <div class="pricing-card">
+                <div class="discount-bubble">Sale!!</div>
                 <h3 class="plan-title">Premium Plan</h3>
                 <p class="plan-description">Advanced features for professionals.</p>
-                <p class="plan-price">Price: $19.99 / month</p>
+                <p class="plan-price">
+                    Price: <span class="old-price">$19.99 / month</span><br>
+                    <span class="new-price">$9.99 / month</span>
+                </p>
                 <ul class="plan-features">
                     <li>✔ Advanced Deepfake Detection</li>
                     <li>✔ Full Image Recognition</li>
@@ -511,16 +522,20 @@
                 </ul>
                 <button class="plan-btn upgrade-btn"
                     data-plan-title="Premium Plan"
-                    data-plan-price="$19.99 / month"
+                    data-plan-price="$9.99 / month"
                     data-plan-details="Advanced Deepfake Detection, Full Image Recognition, AI-Powered Security Solutions, Devices: Up to 5 devices">
                     Upgrade Now
                 </button>
             </div>
-            <!-- Business Plan -->
+            <!-- Business Plan עם הנחה -->
             <div class="pricing-card">
+                <div class="discount-bubble">Sale!!</div>
                 <h3 class="plan-title">Business Plan</h3>
                 <p class="plan-description">Comprehensive solutions for businesses.</p>
-                <p class="plan-price">Price: $49.99 / month</p>
+                <p class="plan-price">
+                    Price: <span class="old-price">$49.99 / month</span><br>
+                    <span class="new-price">$24.99 / month</span>
+                </p>
                 <ul class="plan-features">
                     <li>✔ Enterprise Deepfake Detection</li>
                     <li>✔ Bulk Image Processing</li>
@@ -529,12 +544,12 @@
                 </ul>
                 <button class="plan-btn get-business-btn"
                     data-plan-title="Business Plan"
-                    data-plan-price="$49.99 / month"
+                    data-plan-price="$24.99 / month"
                     data-plan-details="Enterprise Deepfake Detection, Bulk Image Processing, Custom AI Security Features, Devices: Up to 20 devices">
                     Get Business
                 </button>
             </div>
-            <!-- Enterprise Plan -->
+            <!-- Enterprise Plan - ללא הנחה -->
             <div class="pricing-card">
                 <h3 class="plan-title">Enterprise Plan</h3>
                 <p class="plan-description">Ultimate security and AI solutions for enterprises.</p>
@@ -647,7 +662,7 @@
         </div>
     </section>
 
-      <section id="contact">
+    <section id="contact">
           <div class="titles">
               <h2>Contact Us</h2>
                <p>Get in touch with us for any inquiries or support.</p>
