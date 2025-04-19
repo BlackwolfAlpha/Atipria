@@ -1,0 +1,176 @@
+section#SignIn {
+  background-color: #1c1c1c;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 380px;
+  margin: 80px auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  border: none;
+}
+
+#SignIn body,
+#SignIn html {
+  margin: 0;
+  padding: 0;
+}
+
+#SignIn * {
+  box-sizing: border-box;
+}
+
+#SignIn .sign-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+#SignIn .sign-tab-btn {
+  font-size: 16px;
+  padding: 8px 0;
+  color: #9ca3af;
+  font-weight: 500;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  transition: 0.3s ease;
+}
+
+#SignIn .sign-tab-btn.active {
+  color: #ffffff;
+  font-size: 22px;
+  border-color: #06b6d4;
+}
+
+#SignIn form {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#SignIn form.active {
+  display: flex;
+}
+
+#SignIn input[type="email"],
+#SignIn input[type="text"],
+#SignIn input[type="tel"] {
+  background-color: #222;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #f3f4f6;
+  border: 1px solid #333;
+}
+
+#SignIn input::placeholder {
+  color: #6b7280;
+}
+
+#SignIn .signin-check-box {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #9ca3af;
+  align-items: center;
+}
+
+#SignIn .signin-check-box label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+#SignIn .signin-check-box input[type="checkbox"] {
+  width: 12px;
+  height: 12px;
+  background-color: #222222;
+  border: 1px solid #4b5563;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+#SignIn .signin-check-box a {
+  color: #06b6d4;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: text-decoration 0.3s ease;
+}
+
+#SignIn .signin-check-box a:hover {
+  text-decoration: underline;
+}
+
+#SignIn .sign-primary-btn {
+  background: linear-gradient(to right, #06b6d4, #3b82f6);
+  border: none;
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: white;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#SignIn .sign-primary-btn:hover {
+  background: linear-gradient(to right, #0ea5e9, #2563eb);
+}
+
+#SignIn .sign-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #a1a1aa;
+  margin: 24px 0;
+}
+
+#SignIn .sign-divider > div {
+  flex-grow: 1;
+  border-top: 1px solid #4b5563;
+}
+
+#SignIn .sign-divider::before,
+#SignIn .sign-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #3f3f46;
+}
+
+#SignIn .sign-divider span {
+  padding: 0 12px;
+  font-size: 20px;
+}
+
+#SignIn .sign-social-btn {
+  background-color: #111;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#SignIn .sign-social-btn:hover {
+  background-color: #2a2a2a;
+}
+
+#SignIn .sign-social-btn i {
+  font-size: 16px;
+}
+
+#SignIn .sign-social-btn + .sign-social-btn {
+  margin-top: 0.5rem;
+}
