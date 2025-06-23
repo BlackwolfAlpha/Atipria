@@ -326,6 +326,7 @@
         </table>
     </section>
 
+    <!-- Company Goals Map SECTION -->
     <section class="interactive-map-container">
       <div class="interactive-map-top">
         <h2>Discover Our Global Project</h2>
@@ -388,7 +389,7 @@
             <li>✖ Advanced Security Solutions</li>
             <li>✔ Devices: 1 device</li>
           </ul>
-          <button class="plan-btn get-started-btn">Get Started</button>
+          <button class="plan-btn get-started-btn" data-show="Pricing-page">Get Started</button>
         </div>
 
         <div class="pricing-card">
@@ -406,7 +407,7 @@
             <li>✔ AI-Powered Security Solutions</li>
             <li>✔ Devices: Up to 5 devices</li>
           </ul>
-          <button class="plan-btn upgrade-btn">Upgrade Now</button>
+          <button class="plan-btn upgrade-btn" data-show="Pricing-page">Upgrade Now</button>
         </div>
 
         <div class="pricing-card">
@@ -424,7 +425,7 @@
             <li>✔ Custom AI Security Features</li>
             <li>✔ Devices: Up to 20 devices</li>
           </ul>
-          <button class="plan-btn get-business-btn">Get Business</button>
+          <button class="plan-btn get-business-btn" data-show="Pricing-page">Get Business</button>
         </div>
 
         <!-- Enterprise Plan -->
@@ -438,7 +439,7 @@
             <li>✔ Dedicated AI Security Consultant</li>
             <li>✔ Devices: Unlimited devices</li>
           </ul>
-          <button class="plan-btn contact-sales-btn">Contact Sales</button>
+          <button class="plan-btn contact-sales-btn" data-show="Pricing-page">Contact Sales</button>
         </div>
       </div>
     </section>
@@ -484,7 +485,7 @@
         </div>
     </section>
 
-    <section id="Pricing-page">
+    <section id="Pricing-page" class="pricing">
         <div class="titles">
             <h1 class="Main-pricing-title">Pricing Plans</h1>
             <p class="Main-pricing-subtitle">Choose the best plan for your needs.</p>
@@ -710,7 +711,7 @@
               <label><input type="checkbox" /> Remember me</label>
               <a href="#">Forgot password?</a>
             </div>
-            <button class="sign-primary-btn" type="submit">Coming soon</button>
+            <button class="sign-primary-btn" type="submit">Sign In</button>
             <div class="sign-divider">
               <div></div><span>or</span><div></div>
             </div>
@@ -722,7 +723,7 @@
             <input type="text" placeholder="Company / organization name" required />
             <input type="email" placeholder="Email address" required />
             <input type="tel" placeholder="Phone number" required />
-            <button class="sign-primary-btn" type="submit">Coming soon</button>
+            <button class="sign-primary-btn" type="submit">Sign Up</button>
             <div class="sign-divider">
               <div></div><span>or</span><div></div>
             </div>
@@ -731,6 +732,11 @@
           </form>
         </div>
     </section>
+
+    <div id="loading-screen">
+      <div class="loading-spinner"></div>
+      <p>Loading your plan...</p>
+    </div>
 
     <!-- FOOTER -->
     <footer class="footer">
@@ -816,6 +822,33 @@
       }
     }
 
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".plan-btn").forEach(button => {
+          button.addEventListener("click", function () {
+            const targetId = this.dataset.show;
+
+            if (targetId) {
+              const loadingScreen = document.getElementById("loading-screen");
+
+              loadingScreen.classList.add("show");
+
+              setTimeout(() => {
+                loadingScreen.classList.remove("show");
+
+                document.querySelectorAll("body > *:not(header):not(footer)").forEach(el => {
+                  el.style.display = "none";
+                });
+
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                  targetSection.style.display = "block";
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }, 500);
+            }
+          });
+        });
+    });
 </script>
 
 <script>
@@ -904,7 +937,7 @@
 
     document.addEventListener("DOMContentLoaded", function () {
         document.body.addEventListener("click", function (event) {
-            if (event.target.matches(".plan-btn")) {
+            if (event.target.matches(".plan-btn") && event.target.hasAttribute("data-plan-title")) {
                 const btn = event.target;
                 const planTitle = btn.getAttribute("data-plan-title");
                 const planPrice = btn.getAttribute("data-plan-price");
@@ -940,7 +973,65 @@
             }
         });
     });
-
 </script>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<script type="module">
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyChVy3pcfElBAUlAw3yXyABozLzeuAtMKNE",
+    authDomain: "atipria-web.firebaseapp.com",
+    projectId: "atipria-web",
+    storageBucket: "atipria-web.appspot.com",
+    messagingSenderId: "817765154697",
+    appId: "1:817765154697:web:c50354276e11368c4fab58",
+    measurementId: "G-K3LCQT6MZM"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const form = document.getElementById("payment-form");
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const fullName = "Anonymous";
+    const email = "unknown@example.com";
+    const cardNumber = document.getElementById("creditCardInput").value;
+    const expMonth = document.getElementById("expiration-month").value;
+    const expYear = document.getElementById("expiration-year").value;
+    const cvv = document.getElementById("cvcInput").value;
+    const paymentMethod = document.getElementById("supported-company").value;
+
+    const last4Digits = cardNumber.slice(-4);
+
+    const planName = document.querySelector(".plan-name").innerText || "Unknown";
+    const planPrice = document.querySelector(".plan-price").innerText.match(/\$([\d.]+)/);
+    const price = planPrice ? parseFloat(planPrice[1]) : 0;
+
+    const purchaseData = {
+      userName: fullName,
+      email: email,
+      plan: planName,
+      price: price,
+      paymentMethod: paymentMethod,
+      last4Digits: last4Digits,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+      await db.collection("purchases").add(purchaseData);
+      document.getElementById("payment-feedback").innerText = "✅ Payment saved successfully!";
+      form.reset();
+    } catch (error) {
+      console.error("❌ Error saving purchase:", error);
+      document.getElementById("payment-feedback").innerText = "❌ Failed to save your purchase.";
+    }
+  });
+</script>
+
 </body>
 </html>
