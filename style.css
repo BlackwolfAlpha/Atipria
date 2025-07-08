@@ -159,20 +159,6 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-.image-container {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-.image-background {
-    width: 100%;
-    max-width: 500px;
-    height: auto;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
 /* WHY CHOOSE US */
 .why-choose-us {
     text-align: center;
@@ -1189,3 +1175,4 @@ img[src*="fake"]:hover {
     font-size: 1rem;
     color: #ccc;
 }
+
