@@ -32,7 +32,7 @@
 
     <!-- HERO SECTION -->
     <main class="main">
-        <div class="main-content" data-aos="fade-up" data-aos-duration="1000">
+        <div class="main-content">
             <p class="text-gray-400 mb-2" id="welcome-text">👋 Welcome</p>
             <h1 class="title" id="main-title"></h1>
             <p class="subtitle">"Know the Truth. Trust the Real"<br> AI-powered reality verification</p>
@@ -942,6 +942,7 @@
         });
     });
   });
+
     function switchTab(tab) {
       const signInForm = document.getElementById("sign-in");
       const signUpForm = document.getElementById("sign-up");
@@ -1123,8 +1124,12 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
 <script type="module">
-  // Firebase config
+  // 1) init
   const firebaseConfig = {
     apiKey: "AIzaSyChVy3pcfElBAUlAw3yXyABozLzeuAtMKNE",
     authDomain: "atipria-web.firebaseapp.com",
@@ -1136,44 +1141,55 @@
   };
 
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
 
+  // 2) ensure user is signed in (anonymous)
+  function ensureAuth() {
+    return new Promise((resolve, reject) => {
+      const unsub = auth.onAuthStateChanged(async (user) => {
+        try {
+          if (!user) await auth.signInAnonymously();
+          unsub();
+          resolve(auth.currentUser);
+        } catch (e) { reject(e); }
+      });
+    });
+  }
+
+  // 3) handle form submit
   const form = document.getElementById("payment-form");
-
-  form.addEventListener("submit", async function (e) {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
-    const fullName = "Anonymous";
-    const email = "unknown@example.com";
-    const cardNumber = document.getElementById("creditCardInput").value;
-    const expMonth = document.getElementById("expiration-month").value;
-    const expYear = document.getElementById("expiration-year").value;
-    const cvv = document.getElementById("cvcInput").value;
-    const paymentMethod = document.getElementById("supported-company").value;
-
-    const last4Digits = cardNumber.slice(-4);
-
-    const planName = document.querySelector(".plan-name").innerText || "Unknown";
-    const planPrice = document.querySelector(".plan-price").innerText.match(/\$([\d.]+)/);
-    const price = planPrice ? parseFloat(planPrice[1]) : 0;
-
-    const purchaseData = {
-      userName: fullName,
-      email: email,
-      plan: planName,
-      price: price,
-      paymentMethod: paymentMethod,
-      last4Digits: last4Digits,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    };
+    document.getElementById("payment-feedback").innerText = "Processing...";
 
     try {
+      await ensureAuth(); // <-- חשוב
+
+      const cardNumber = document.getElementById("creditCardInput").value || "";
+      const paymentMethod = document.getElementById("supported-company").value || "";
+      const planName  = document.querySelector(".plan-name").innerText || "Unknown";
+      const planPrice = document.querySelector(".plan-price").innerText.match(/\$([\d.]+)/);
+      const price     = planPrice ? parseFloat(planPrice[1]) : 0;
+
+      const purchaseData = {
+        userName: "Anonymous",
+        email: "unknown@example.com",
+        plan: planName,
+        price: price,
+        paymentMethod: paymentMethod,
+        last4Digits: cardNumber.slice(-4) || "",
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        uid: auth.currentUser?.uid || null
+      };
+
       await db.collection("purchases").add(purchaseData);
       document.getElementById("payment-feedback").innerText = "✅ Payment saved successfully!";
       form.reset();
     } catch (error) {
       console.error("❌ Error saving purchase:", error);
-      document.getElementById("payment-feedback").innerText = "❌ Failed to save your purchase.";
+      document.getElementById("payment-feedback").innerText =
+        "❌ Failed to save your purchase: " + (error?.message || "");
     }
   });
 </script>
@@ -1185,4 +1201,3 @@
 
 </body>
 </html>
-
