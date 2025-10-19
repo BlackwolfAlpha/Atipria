@@ -1266,12 +1266,19 @@
 
   usersAuth.onAuthStateChanged((user) => {
     const welcome = document.getElementById("welcome-text");
+    const signInNav = document.getElementById("nav-SignIn");
+
     if (user) {
       welcome.textContent = "👋 Welcome" + (user.displayName ? `, ${user.displayName}` : "");
       addOrUpdateSignOutButton();
+
+      if (signInNav) signInNav.style.display = "none";
+
     } else {
       welcome.textContent = "👋 Welcome";
       removeSignOutButton();
+
+      if (signInNav) signInNav.style.display = "inline-block";
     }
   });
 
