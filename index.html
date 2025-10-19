@@ -865,38 +865,54 @@
     </section>
 
     <section id="SignIn">
-        <div class="input-document">
-          <div class="sign-tabs">
-            <button class="sign-tab-btn active" onclick="switchTab('sign-in')" type="button">Sign In</button>
-            <button class="sign-tab-btn" onclick="switchTab('sign-up')" type="button">Sign Up</button>
-          </div>
-          <form id="sign-in" class="active">
-            <input type="email" placeholder="Email address" required />
-            <input type="text" placeholder="Full name" required />
-            <div class="signin-check-box">
-              <label><input type="checkbox" /> Remember me</label>
-              <a href="#">Forgot password?</a>
-            </div>
-            <button class="sign-primary-btn" type="submit">Sign In</button>
-            <div class="sign-divider">
-              <div></div><span>or</span><div></div>
-            </div>
-            <div class="sign-social-btn"><i class="fab fa-google"></i> Continue with Google</div>
-            <div class="sign-social-btn"><i class="fab fa-facebook-f"></i> Continue with Facebook</div>
-          </form>
-          <form id="sign-up" class="hidden">
-            <input type="text" placeholder="Full name" required />
-            <input type="text" placeholder="Company / organization name" required />
-            <input type="email" placeholder="Email address" required />
-            <input type="tel" placeholder="Phone number" required />
-            <button class="sign-primary-btn" type="submit">Sign Up</button>
-            <div class="sign-divider">
-              <div></div><span>or</span><div></div>
-            </div>
-            <div class="sign-social-btn"><i class="fab fa-google"></i> Continue with Google</div>
-            <div class="sign-social-btn"><i class="fab fa-facebook-f"></i> Continue with Facebook</div>
-          </form>
+      <div class="input-document">
+        <div class="sign-tabs">
+          <button class="sign-tab-btn active" onclick="switchTab('sign-in')" type="button">Sign In</button>
+          <button class="sign-tab-btn" onclick="switchTab('sign-up')" type="button">Sign Up</button>
         </div>
+
+        <!-- SIGN IN -->
+        <form id="sign-in" class="active">
+          <input id="signin-email" type="email" placeholder="Email address" required />
+          <input id="signin-password" type="password" placeholder="Password" minlength="6" required />
+          <div class="signin-check-box">
+            <label><input id="remember-me" type="checkbox" /> Remember me</label>
+            <a href="#" id="forgot-link">Forgot password?</a>
+          </div>
+          <button class="sign-primary-btn" type="submit">Sign In</button>
+          <div class="sign-divider">
+            <div></div><span>or</span><div></div>
+          </div>
+          <div id="google-signin" class="sign-social-btn">
+            <i class="fab fa-google"></i> Continue with Google
+          </div>
+          <div id="facebook-signin" class="sign-social-btn">
+            <i class="fab fa-facebook-f"></i> Continue with Facebook
+          </div>
+          <p id="signin-feedback" class="form-feedback"></p>
+        </form>
+
+        <!-- SIGN UP -->
+        <form id="sign-up" class="hidden">
+          <input id="signup-name" type="text" placeholder="Full name" required />
+          <input id="signup-company" type="text" placeholder="Company / organization name" />
+          <input id="signup-email" type="email" placeholder="Email address" required />
+          <input id="signup-phone" type="tel" placeholder="Phone number" />
+          <input id="signup-password" type="password" placeholder="Password (min 6 chars)" minlength="6" required />
+          <input id="signup-password2" type="password" placeholder="Confirm password" minlength="6" required />
+          <button class="sign-primary-btn" type="submit">Sign Up</button>
+          <div class="sign-divider">
+            <div></div><span>or</span><div></div>
+          </div>
+          <div id="google-signup" class="sign-social-btn">
+            <i class="fab fa-google"></i> Continue with Google
+          </div>
+          <div id="facebook-signup" class="sign-social-btn">
+            <i class="fab fa-facebook-f"></i> Continue with Facebook
+          </div>
+          <p id="signup-feedback" class="form-feedback"></p>
+        </form>
+      </div>
     </section>
 
     <div id="loading-screen">
@@ -1141,18 +1157,151 @@
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+<script>
+  const usersConfig = {
+    apiKey: "AIzaSyAh7N979o2VZ5tJGsbFkBRUZcJwISxfCoI",
+    authDomain: "atipria-users.firebaseapp.com",
+    projectId: "atipria-users",
+    storageBucket: "atipria-users.appspot.com",
+    messagingSenderId: "277286791911",
+    appId: "1:277286791911:web:827ddeffe9d217b8521042",
+    measurementId: "G-GMH2GCM7JY"
+  };
+
+  const usersApp  = firebase.initializeApp(usersConfig, "usersApp");
+  const usersAuth = usersApp.auth();
+  const usersDB   = usersApp.firestore();
+
+  async function upsertUserDoc(user, extra = {}) {
+    const ref = usersDB.collection("users").doc(user.uid);
+    await ref.set({
+      uid: user.uid,
+      email: user.email || null,
+      name: user.displayName || extra.name || null,
+      phone: extra.phone || null,
+      company: extra.company || null,
+      isAnonymous: !!user.isAnonymous,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      ...extra
+    }, { merge: true });
+  }
+
+  const signUpForm = document.getElementById("sign-up");
+  signUpForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name     = document.getElementById("signup-name").value.trim();
+    const email    = document.getElementById("signup-email").value.trim();
+    const phone    = document.getElementById("signup-phone").value.trim();
+    const company  = document.getElementById("signup-company").value.trim();
+    const pass1    = document.getElementById("signup-password").value;
+    const pass2    = document.getElementById("signup-password2").value;
+    const fb       = document.getElementById("signup-feedback");
+
+    if (pass1 !== pass2) {
+      fb.textContent = "❌ Passwords do not match";
+      return;
+    }
+
+    fb.textContent = "Creating your account...";
+    try {
+      const cred = await usersAuth.createUserWithEmailAndPassword(email, pass1);
+      await cred.user.updateProfile({ displayName: name });
+      await upsertUserDoc(cred.user, { name, phone, company, isAnonymous: false });
+      fb.textContent = "✅ Account created! You are signed in.";
+    } catch (err) {
+      console.error(err);
+      fb.textContent = "❌ " + (err.message || "Sign up failed");
+    }
+  });
+
+  const signInForm = document.getElementById("sign-in");
+  signInForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("signin-email").value.trim();
+    const pass  = document.getElementById("signin-password").value;
+    const fb    = document.getElementById("signin-feedback");
+    const remember = document.getElementById("remember-me").checked;
+
+    fb.textContent = "Signing you in...";
+    try {
+      await usersAuth.setPersistence(
+        remember ? firebase.auth.Auth.Persistence.LOCAL
+                 : firebase.auth.Auth.Persistence.SESSION
+      );
+      const cred = await usersAuth.signInWithEmailAndPassword(email, pass);
+      await upsertUserDoc(cred.user);
+      fb.textContent = "✅ Signed in";
+    } catch (err) {
+      console.error(err);
+      fb.textContent = "❌ " + (err.message || "Sign in failed");
+    }
+  });
+
+  document.getElementById("forgot-link").addEventListener("click", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("signin-email").value.trim();
+    if (!email) { alert("Enter your email above and click again."); return; }
+    try {
+      await usersAuth.sendPasswordResetEmail(email);
+      alert("Password reset email sent.");
+    } catch (err) {
+      alert("Failed: " + (err.message || "Unknown error"));
+    }
+  });
+
+  const googleProvider = new firebase.auth.GoogleAuthProvider();
+  function googleFlow() {
+    usersAuth.signInWithPopup(googleProvider)
+      .then(async (cred) => {
+        await upsertUserDoc(cred.user, { isAnonymous: false });
+        alert("Signed in with Google. Welcome " + (cred.user.displayName || ""));
+      })
+      .catch(err => alert("Google sign-in failed: " + (err.message || "")));
+  }
+  document.getElementById("google-signin").addEventListener("click", googleFlow);
+  document.getElementById("google-signup").addEventListener("click", googleFlow);
+
+  usersAuth.onAuthStateChanged((user) => {
+    const welcome = document.getElementById("welcome-text");
+    if (user) {
+      welcome.textContent = "👋 Welcome" + (user.displayName ? `, ${user.displayName}` : "");
+      addOrUpdateSignOutButton();
+    } else {
+      welcome.textContent = "👋 Welcome";
+      removeSignOutButton();
+    }
+  });
+
+  function addOrUpdateSignOutButton() {
+    if (document.getElementById("nav-SignOut")) return;
+    const nav = document.querySelector(".nav");
+    const a = document.createElement("a");
+    a.className = "nav-link";
+    a.id = "nav-SignOut";
+    a.href = "#";
+    a.textContent = "Sign Out";
+    a.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await usersAuth.signOut();
+      alert("Signed out");
+    });
+    nav.appendChild(a);
+  }
+  function removeSignOutButton() {
+    const a = document.getElementById("nav-SignOut");
+    if (a) a.remove();
+  }
+</script>
 
 <script type="module">
   const firebaseConfig = {
     apiKey: "AIzaSyChVy3pcEIBaUIAw3yXyABozLzeuAtMKNE",
     authDomain: "atipria-web.firebaseapp.com",
     projectId: "atipria-web",
-    storageBucket: "atipria-web.appspot.com", // ✅ תיקון כאן
+    storageBucket: "atipria-web.appspot.com",
     messagingSenderId: "817765154697",
     appId: "1:817765154697:web:c50354276e11368c4fab58",
     measurementId: "G-K3LCQT6MZM"
