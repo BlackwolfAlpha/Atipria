@@ -943,6 +943,25 @@
     });
   });
 
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  document.onkeydown = function(e) {
+    if (e.keyCode === 123) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+      return false;
+    }
+    if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+      return false;
+    }
+    if (e.ctrlKey && e.keyCode === 85) {
+      return false;
+    }
+  };
+
     function switchTab(tab) {
       const signInForm = document.getElementById("sign-in");
       const signUpForm = document.getElementById("sign-up");
@@ -1130,15 +1149,15 @@
 
 <script type="module">
   // 1) init
-  const firebaseConfig = {
-    apiKey: "AIzaSyChVy3pcfElBAUlAw3yXyABozLzeuAtMKNE",
-    authDomain: "atipria-web.firebaseapp.com",
-    projectId: "atipria-web",
-    storageBucket: "atipria-web.appspot.com",
-    messagingSenderId: "817765154697",
-    appId: "1:817765154697:web:c50354276e11368c4fab58",
-    measurementId: "G-K3LCQT6MZM"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyChVy3pcEIBaUIAw3yXyABozLzeuAtMKNE",
+      authDomain: "atipria-web.firebaseapp.com",
+      projectId: "atipria-web",
+      storageBucket: "atipria-web.firebasestorage.app",
+      messagingSenderId: "817765154697",
+      appId: "1:817765154697:web:c50354276e11368c4fab58",
+      measurementId: "G-K3LCQT6MZM"
+    };
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
