@@ -1148,23 +1148,21 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script type="module">
-  // 1) init
-    const firebaseConfig = {
-      apiKey: "AIzaSyChVy3pcEIBaUIAw3yXyABozLzeuAtMKNE",
-      authDomain: "atipria-web.firebaseapp.com",
-      projectId: "atipria-web",
-      storageBucket: "atipria-web.firebasestorage.app",
-      messagingSenderId: "817765154697",
-      appId: "1:817765154697:web:c50354276e11368c4fab58",
-      measurementId: "G-K3LCQT6MZM"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyChVy3pcEIBaUIAw3yXyABozLzeuAtMKNE",
+    authDomain: "atipria-web.firebaseapp.com",
+    projectId: "atipria-web",
+    storageBucket: "atipria-web.appspot.com", // ✅ תיקון כאן
+    messagingSenderId: "817765154697",
+    appId: "1:817765154697:web:c50354276e11368c4fab58",
+    measurementId: "G-K3LCQT6MZM"
+  };
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
-  const db   = firebase.firestore();
+  const db = firebase.firestore();
 
-  // 2) ensure user is signed in (anonymous)
-  function ensureAuth() {
+  async function ensureAuth() {
     return new Promise((resolve, reject) => {
       const unsub = auth.onAuthStateChanged(async (user) => {
         try {
@@ -1176,20 +1174,22 @@
     });
   }
 
-  // 3) handle form submit
   const form = document.getElementById("payment-form");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     document.getElementById("payment-feedback").innerText = "Processing...";
 
     try {
-      await ensureAuth(); // <-- חשוב
+      await ensureAuth();
 
+      const modal = document.getElementById("purchase-modal");
       const cardNumber = document.getElementById("creditCardInput").value || "";
       const paymentMethod = document.getElementById("supported-company").value || "";
-      const planName  = document.querySelector(".plan-name").innerText || "Unknown";
-      const planPrice = document.querySelector(".plan-price").innerText.match(/\$([\d.]+)/);
-      const price     = planPrice ? parseFloat(planPrice[1]) : 0;
+      const planName  = modal.querySelector(".plan-name").innerText || "Unknown";
+
+      const priceText = modal.querySelector(".plan-price").innerText;
+      const match = priceText.match(/\$([\d.]+)/);
+      const price = match ? parseFloat(match[1]) : 0;
 
       const purchaseData = {
         userName: "Anonymous",
@@ -1202,7 +1202,9 @@
         uid: auth.currentUser?.uid || null
       };
 
+      console.log("💾 Saving purchase:", purchaseData);
       await db.collection("purchases").add(purchaseData);
+
       document.getElementById("payment-feedback").innerText = "✅ Payment saved successfully!";
       form.reset();
     } catch (error) {
