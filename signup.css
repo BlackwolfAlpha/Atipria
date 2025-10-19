@@ -1,3 +1,4 @@
+/* --- SIGN IN / SIGN UP --- */
 section#SignIn {
   background-color: #1c1c1c;
   border-radius: 16px;
@@ -9,16 +10,11 @@ section#SignIn {
   border: none;
 }
 
-#SignIn body,
-#SignIn html {
-  margin: 0;
-  padding: 0;
-}
-
 #SignIn * {
   box-sizing: border-box;
 }
 
+/* --- Tabs --- */
 #SignIn .sign-tabs {
   display: flex;
   gap: 1rem;
@@ -42,6 +38,7 @@ section#SignIn {
   border-color: #06b6d4;
 }
 
+/* --- Forms --- */
 #SignIn form {
   display: none;
   flex-direction: column;
@@ -52,21 +49,31 @@ section#SignIn {
   display: flex;
 }
 
+/* --- Inputs --- */
 #SignIn input[type="email"],
 #SignIn input[type="text"],
-#SignIn input[type="tel"] {
+#SignIn input[type="tel"],
+#SignIn input[type="password"] {
   background-color: #222;
   border-radius: 6px;
   padding: 10px 12px;
   font-size: 14px;
   color: #f3f4f6;
   border: 1px solid #333;
+  outline: none;
+  transition: border 0.2s ease, background 0.2s ease;
 }
 
 #SignIn input::placeholder {
   color: #6b7280;
 }
 
+#SignIn input:focus {
+  border-color: #06b6d4;
+  background-color: #262626;
+}
+
+/* --- Checkbox and Forgot Password --- */
 #SignIn .signin-check-box {
   display: flex;
   justify-content: space-between;
@@ -80,16 +87,13 @@ section#SignIn {
   align-items: center;
   gap: 4px;
   cursor: pointer;
-  font-weight: 400;
 }
 
 #SignIn .signin-check-box input[type="checkbox"] {
-  width: 12px;
-  height: 12px;
-  background-color: #222222;
-  border: 1px solid #4b5563;
+  width: 14px;
+  height: 14px;
   border-radius: 2px;
-  cursor: pointer;
+  accent-color: #06b6d4;
 }
 
 #SignIn .signin-check-box a {
@@ -104,6 +108,7 @@ section#SignIn {
   text-decoration: underline;
 }
 
+/* --- Buttons --- */
 #SignIn .sign-primary-btn {
   background: linear-gradient(to right, #06b6d4, #3b82f6);
   border: none;
@@ -114,13 +119,15 @@ section#SignIn {
   color: white;
   margin-top: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, transform 0.1s ease;
 }
 
 #SignIn .sign-primary-btn:hover {
   background: linear-gradient(to right, #0ea5e9, #2563eb);
+  transform: scale(1.02);
 }
 
+/* --- Divider --- */
 #SignIn .sign-divider {
   display: flex;
   align-items: center;
@@ -135,19 +142,12 @@ section#SignIn {
   border-top: 1px solid #4b5563;
 }
 
-#SignIn .sign-divider::before,
-#SignIn .sign-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: #3f3f46;
-}
-
 #SignIn .sign-divider span {
   padding: 0 12px;
-  font-size: 20px;
+  font-size: 14px;
 }
 
+/* --- Social Buttons --- */
 #SignIn .sign-social-btn {
   background-color: #111;
   padding: 10px;
@@ -160,17 +160,42 @@ section#SignIn {
   justify-content: center;
   gap: 8px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.1s ease;
 }
 
 #SignIn .sign-social-btn:hover {
   background-color: #2a2a2a;
+  transform: scale(1.03);
 }
 
 #SignIn .sign-social-btn i {
   font-size: 16px;
 }
 
-#SignIn .sign-social-btn + .sign-social-btn {
-  margin-top: 0.5rem;
+/* --- Feedback messages --- */
+#SignIn .form-feedback {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+#SignIn #signin-feedback {
+  color: #38bdf8;
+}
+
+#SignIn #signup-feedback {
+  color: #4ade80;
+}
+
+/* --- Responsive --- */
+@media (max-width: 480px) {
+  section#SignIn {
+    margin: 40px 20px;
+    padding: 1.5rem;
+  }
+
+  #SignIn .sign-tab-btn.active {
+    font-size: 18px;
+  }
 }
