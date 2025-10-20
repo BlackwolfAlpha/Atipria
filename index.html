@@ -229,26 +229,31 @@
                     <td>1.0.0</td>
                     <td>First version of the plugin</td>
                     <td><button class="download-btn" onclick="installVersion('1.0.0')">Coming soon</button></td>
+                    <!--Please replace the "Coming soon" text with "Download" after release -->
                 </tr>
                 <tr>
                     <td>1.1.0</td>
                     <td>Bug fixes and improvements + Side 3 scan</td>
                     <td><button class="download-btn" onclick="installVersion('1.1.0')">Coming soon</button></td>
+                    <!--Please replace the "Coming soon" text with "Download" after release -->
                 </tr>
                 <tr>
                     <td>1.1.5</td>
                     <td>Changing the UI + improving the UX</td>
                     <td><button class="download-btn" onclick="installVersion('1.1.5')">Coming soon</button></td>
+                    <!--Please replace the "Coming soon" text with "Download" after release -->
                 </tr>
                 <tr>
                     <td>1.1.6</td>
                     <td>Doms + efficiency upgrade</td>
                     <td><button class="download-btn" onclick="installVersion('1.1.6')">Coming soon</button></td>
+                    <!--Please replace the "Coming soon" text with "Download" after release -->
                 </tr>
                 <tr>
                     <td>1.1.7</td>
                     <td>Continuous use fix + permanent interface creation</td>
                     <td><button class="download-btn" onclick="installVersion('1.1.7')">Coming soon</button></td>
+                    <!--Please replace the "Coming soon" text with "Download" after release -->
                 </tr>
             </tbody>
         </table>
@@ -766,7 +771,7 @@
                         <form id="payment-form">
                             <div class="form-group">
                                 <label>Credit card number</label>
-                                <input id="creditCardInput" type="number" placeholder="4584 -" maxlength="16">
+                                <input id="creditCardInput" type="text" inputmode="numeric" placeholder="4584  ****  ****  ****" maxlength="19">
                             </div>
                             <div class="form-row">
                                 <div class="form-group half">
@@ -804,7 +809,7 @@
                             </div>
                             <div class="form-group">
                                 <label>CVC/CVV</label>
-                                <input id="cvcInput" type="number" placeholder="3 or 4 digits code" maxlength="4">
+                                <input id="cvcInput" type="text" inputmode="numeric" placeholder="3 or 4 digits code" maxlength="4">
                             </div>
                             <div class="form-group">
                                 <label>Supported Companies</label>
@@ -968,6 +973,18 @@
     <div id="loading-screen">
       <div class="loading-spinner"></div>
       <p>Loading your plan...</p>
+    </div>
+
+    <div id="auth-popup-backdrop"></div>
+    <div id="auth-popup">
+      <div class="card">
+        <h3 style="margin:0 0 8px">Need to connect</h3>
+        <p style="margin:0 0 12px">To complete a purchase, log in or register on the site.</p>
+        <div class="actions">
+          <button id="auth-popup-cancel" class="btn">Cancel</button>
+          <button id="auth-popup-go" class="btn primary">Login/register</button>
+        </div>
+      </div>
     </div>
 
     <!-- FOOTER -->
@@ -1547,10 +1564,9 @@
     appId: "1:817765154697:web:c50354276e11368c4fab58",
     measurementId: "G-K3LCQT6MZM"
   };
-
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
-  const db = firebase.firestore();
+  const db   = firebase.firestore();
 
   async function ensureAuth() {
     return new Promise((resolve, reject) => {
@@ -1564,43 +1580,177 @@
     });
   }
 
+  function showAuthPopup(){
+    document.getElementById("auth-popup-backdrop").style.display = "block";
+    document.getElementById("auth-popup").style.display = "grid";
+  }
+  function hideAuthPopup(){
+    document.getElementById("auth-popup-backdrop").style.display = "none";
+    document.getElementById("auth-popup").style.display = "none";
+  }
+  document.getElementById("auth-popup-cancel")?.addEventListener("click", hideAuthPopup);
+  document.getElementById("auth-popup-go")?.addEventListener("click", () => {
+    hideAuthPopup();
+    document.querySelectorAll("body > *:not(header):not(footer)").forEach(el=>el.style.display="none");
+    document.getElementById("SignIn").style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  const onlyDigits = s => (s||"").replace(/\D+/g,"");
+  function luhn(num){
+    const s = onlyDigits(num);
+    if (s.length < 13 || s.length > 19) return false;
+    let sum = 0, dbl = false;
+    for (let i = s.length - 1; i >= 0; i--) {
+      let d = +s[i];
+      if (dbl) { d *= 2; if (d > 9) d -= 9; }
+      sum += d; dbl = !dbl;
+    }
+    return sum % 10 === 0;
+  }
+  function monthIndex(m){
+    const map = {january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
+    return map[(m||"").toLowerCase()] || 0;
+  }
+  function setError(el, msg){
+    el.classList.add("input-error");
+    const d = document.createElement("div");
+    d.className = "field-error";
+    d.textContent = msg;
+    el.insertAdjacentElement("afterend", d);
+  }
+  function clearErrors(){
+    document.querySelectorAll(".input-error").forEach(e=>e.classList.remove("input-error"));
+    document.querySelectorAll(".field-error").forEach(e=>e.remove());
+  }
+  function focusFirstError(){
+    const bad = document.querySelector(".input-error");
+    if (bad && typeof bad.focus === "function") bad.focus();
+  }
+
+  const ccEl  = document.getElementById("creditCardInput");
+  const cvcEl = document.getElementById("cvcInput");
+  ccEl?.addEventListener("input", ()=>{ ccEl.value  = onlyDigits(ccEl.value).slice(0,19); });
+  cvcEl?.addEventListener("input",()=>{ cvcEl.value = onlyDigits(cvcEl.value).slice(0,4); });
+
+  document.body.addEventListener("click", (ev) => {
+    const btn = ev.target.closest(".plan-btn");
+    if (!btn) return;
+    if (!window.usersAuth?.currentUser) {
+      ev.preventDefault();
+      showAuthPopup();
+      return;
+    }
+  });
+
   const form = document.getElementById("payment-form");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    document.getElementById("payment-feedback").innerText = "Processing...";
+    const fb = document.getElementById("payment-feedback");
+    const payBtn = form.querySelector(".pay-now-btn");
+    fb.innerText = "";
+    clearErrors();
+
+    const appUser = window.usersAuth?.currentUser || null;
+    if (!appUser) {
+      fb.innerText = "❌ You must log in/register before payment.";
+      showAuthPopup();
+      return;
+    }
+
+    const modal        = document.getElementById("purchase-modal");
+    const companySel   = document.getElementById("supported-company");
+    const monthSel     = document.getElementById("expiration-month");
+    const yearSel      = document.getElementById("expiration-year");
+
+    const rawCard      = (ccEl.value || "").replace(/\s+/g, "");
+    const cardNumber   = rawCard;
+    const paymentMethod= (companySel.value || "").trim();
+    const mm           = monthIndex(monthSel.value);
+    const yyRaw        = (yearSel.value || "").trim();
+    const yy           = /^\d{4}$/.test(yyRaw) ? +yyRaw : 0;
+    const cvc          = onlyDigits(cvcEl.value);
+
+    let ok = true;
+
+    if (!paymentMethod){ ok=false; setError(companySel, "Select a payment method/company"); }
+
+    const isCardBrand = /visa|mastercard|american express|discover/i.test(paymentMethod);
+    const isAltMethod = /paypal|apple pay|google pay/i.test(paymentMethod);
+    if (isAltMethod) {
+      ok = false;
+      setError(companySel, "This payment method is not yet supported here. Please choose a card brand.");
+    }
+
+    if (!cardNumber){ ok=false; setError(ccEl, "Enter card number"); }
+    if (!mm){ ok=false; setError(monthSel, "Select a month"); }
+    if (!yy){ ok=false; setError(yearSel, "Select a year"); }
+    if (!cvc){ ok=false; setError(cvcEl, "Enter CVC/CVV"); }
+
+    // 4) Luhn
+    if (isCardBrand && cardNumber && !luhn(cardNumber)){
+      ok=false; setError(ccEl, "Invalid card number");
+    }
+
+    if (mm && yy){
+      const now = new Date();
+      const endOfMonth = new Date(yy, mm, 0, 23,59,59,999);
+      if (endOfMonth < now){ ok=false; setError(yearSel, "Card expired"); }
+    }
+
+    if (isCardBrand){
+      const isAmex = /american express/i.test(paymentMethod);
+      if (isAmex ? !/^\d{4}$/.test(cvc) : !/^\d{3}$/.test(cvc)){
+        ok=false;
+        setError(cvcEl, isAmex ? "AmEx requires a 4-digit CVC" : "3-digit CVC required");
+      }
+    }
+
+    if (!ok){
+      fb.innerText = "Please complete/correct the details before payment.";
+      focusFirstError();
+      return;
+    }
 
     try {
+      fb.innerText = "Processing...";
+      payBtn?.setAttribute("disabled","true");
+
       await ensureAuth();
 
-      const modal = document.getElementById("purchase-modal");
-      const cardNumber = document.getElementById("creditCardInput").value || "";
-      const paymentMethod = document.getElementById("supported-company").value || "";
-      const planName  = modal.querySelector(".plan-name").innerText || "Unknown";
+      const planName  = modal.querySelector(".plan-name")?.innerText || "Unknown";
+      const priceText = modal.querySelector(".plan-price")?.innerText || "";
+      const match     = priceText.match(/\$([\d.]+)/);
+      const price     = match ? parseFloat(match[1]) : 0;
 
-      const priceText = modal.querySelector(".plan-price").innerText;
-      const match = priceText.match(/\$([\d.]+)/);
-      const price = match ? parseFloat(match[1]) : 0;
-
-      const purchaseData = {
-        userName: "Anonymous",
-        email: "unknown@example.com",
+      await db.collection("purchases").add({
+        userName: appUser.displayName || "User",
+        email: appUser.email || "",
+        uidUsers: appUser.uid,
+        uidWeb: auth.currentUser?.uid || null,
         plan: planName,
-        price: price,
-        paymentMethod: paymentMethod,
-        last4Digits: cardNumber.slice(-4) || "",
+        price,
+        paymentMethod,
+        last4Digits: onlyDigits(cardNumber).slice(-4),
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        uid: auth.currentUser?.uid || null
-      };
+      });
 
-      console.log("💾 Saving purchase:", purchaseData);
-      await db.collection("purchases").add(purchaseData);
+      try {
+        await window.usersDB?.collection("users").doc(appUser.uid)
+          .set({ plan: planName, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      } catch (_) {}
 
-      document.getElementById("payment-feedback").innerText = "✅ Payment saved successfully!";
+      fb.innerText = "✅ Payment saved successfully!";
       form.reset();
+
+      if (document.getElementById("UserArea")?.style.display !== "none" && typeof window.renderUserArea === "function") {
+        window.renderUserArea(appUser);
+      }
     } catch (error) {
       console.error("❌ Error saving purchase:", error);
-      document.getElementById("payment-feedback").innerText =
-        "❌ Failed to save your purchase: " + (error?.message || "");
+      fb.innerText = "❌ Failed to save your purchase: " + (error?.message || "");
+    } finally {
+      payBtn?.removeAttribute("disabled");
     }
   });
 </script>
@@ -1613,5 +1763,3 @@
 
 </body>
 </html>
-
-
