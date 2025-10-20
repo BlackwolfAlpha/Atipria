@@ -25,6 +25,7 @@
             <a class="nav-link" href="#" id="nav-Pricing">Pricing</a>
             <a class="nav-link" href="#" id="nav-contact">Contact</a>
             <a class="nav-link" href="#" id="nav-SignIn">Sign In</a>
+            <a class="nav-link" href="#" id="nav-Account" style="display:none;">My Account</a>
         </nav>
     </header>
 
@@ -915,6 +916,55 @@
       </div>
     </section>
 
+    <section id="UserArea" style="display:none;">
+      <div class="titles">
+        <h1>My Account</h1>
+        <p>Manage your profile and view your plan & purchases.</p>
+      </div>
+
+      <div class="input-document" style="max-width:880px;margin:auto;">
+        <!-- Profile card -->
+        <div class="profile-card" style="padding:16px;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:16px;">
+          <h3>Profile</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
+            <input id="ua-name"    type="text"  placeholder="Full name">
+            <input id="ua-email"   type="email" placeholder="Email" disabled>
+            <input id="ua-phone"   type="tel"   placeholder="Phone">
+            <input id="ua-company" type="text"  placeholder="Company">
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="ua-save" class="sign-primary-btn" type="button">Save changes</button>
+            <button id="ua-reset" class="sign-primary-btn" type="button">Reset password</button>
+            <button id="ua-delete" class="sign-primary-btn" type="button" style="background:#ef4444;">Delete account</button>
+          </div>
+          <p id="ua-feedback" class="form-feedback"></p>
+        </div>
+
+        <!-- Current plan -->
+        <div class="plan-card" style="padding:16px;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:16px;">
+          <h3>Current Plan</h3>
+          <p id="ua-plan">Loading…</p>
+        </div>
+
+        <!-- Purchases table -->
+        <div class="purchases-card" style="padding:16px;border:1px solid #e5e7eb;border-radius:12px;">
+          <h3>Purchases</h3>
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr>
+                <th style="text-align:left;border-bottom:1px solid #e5e7eb;padding:8px;">Date</th>
+                <th style="text-align:left;border-bottom:1px solid #e5e7eb;padding:8px;">Plan</th>
+                <th style="text-align:left;border-bottom:1px solid #e5e7eb;padding:8px;">Method</th>
+                <th style="text-align:left;border-bottom:1px solid #e5e7eb;padding:8px;">Amount ($)</th>
+                <th style="text-align:left;border-bottom:1px solid #e5e7eb;padding:8px;">Card ••••</th>
+              </tr>
+            </thead>
+            <tbody id="ua-purchases"><tr><td style="padding:8px;" colspan="5">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <div id="loading-screen">
       <div class="loading-spinner"></div>
       <p>Loading your plan...</p>
@@ -926,6 +976,7 @@
     </footer>
 
 <script src="JAVA/welcome.js"></script>
+<script src="JAVA/UserInfo.js"></script>
 
 <script>
   emailjs.init("JU3WF_cvPQycgSfmp");
@@ -1088,31 +1139,38 @@
         });
 
         document.querySelectorAll(".nav-link").forEach(link => {
-            link.addEventListener("click", function (event) {
-                event.preventDefault();
+          link.addEventListener("click", function (event) {
+            event.preventDefault();
 
-                document.querySelectorAll("body > *:not(header):not(footer)").forEach(el => {
-                    el.style.display = "none";
-                });
-
-                switch (this.id) {
-                    case "nav-home":
-                        window.location.href = "index.html";
-                        break;
-                    case "nav-AboutUs":
-                        document.getElementById("AboutUs").style.display = "block";
-                        break;
-                    case "nav-Pricing":
-                        document.getElementById("Pricing-page").style.display = "block";
-                        break;
-                    case "nav-contact":
-                        document.getElementById("contact").style.display = "block";
-                        break;
-                    case "nav-SignIn":
-                        document.getElementById("SignIn").style.display = "block";
-                        break;
-                }
+            document.querySelectorAll("body > *:not(header):not(footer)").forEach(el => {
+              el.style.display = "none";
             });
+
+            switch (this.id) {
+              case "nav-home":
+                window.location.href = "index.html";
+                break;
+              case "nav-AboutUs":
+                document.getElementById("AboutUs").style.display = "block";
+                break;
+              case "nav-Pricing":
+                document.getElementById("Pricing-page").style.display = "block";
+                break;
+              case "nav-contact":
+                document.getElementById("contact").style.display = "block";
+                break;
+              case "nav-SignIn":
+                document.getElementById("SignIn").style.display = "block";
+                break;
+
+              case "nav-Account":
+                document.getElementById("UserArea").style.display = "block";
+                if (typeof renderUserArea === "function" && usersAuth.currentUser) {
+                  renderUserArea(usersAuth.currentUser);
+                }
+                break;
+            }
+          });
         });
     });
 
@@ -1175,110 +1233,164 @@
   const usersAuth = usersApp.auth();
   const usersDB   = usersApp.firestore();
 
-  async function upsertUserDoc(user, extra = {}) {
+  window.usersAuth = usersAuth;
+  window.usersDB   = usersDB;
+
+  const pickDefined = (obj) =>
+    Object.fromEntries(
+      Object.entries(obj).filter(([, v]) => v !== undefined && v !== null && v !== "")
+    );
+
+  async function ensureUserDoc(user) {
+    if (!user) return;
     const ref = usersDB.collection("users").doc(user.uid);
-    await ref.set({
+    const snap = await ref.get();
+
+    if (!snap.exists) {
+      await ref.set(pickDefined({
+        uid: user.uid,
+        email: user.email || null,
+        name: user.displayName || null,
+        isAnonymous: !!user.isAnonymous,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      }));
+    } else {
+      await ref.set(pickDefined({
+        email: user.email || undefined,
+        name: user.displayName || undefined,
+        isAnonymous: !!user.isAnonymous,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      }), { merge: true });
+    }
+  }
+
+  async function upsertUserDoc(user, extra = {}) {
+    if (!user) return;
+    const ref = usersDB.collection("users").doc(user.uid);
+
+    await ensureUserDoc(user);
+
+    const payload = pickDefined({
       uid: user.uid,
-      email: user.email || null,
-      name: user.displayName || extra.name || null,
-      phone: extra.phone || null,
-      company: extra.company || null,
-      isAnonymous: !!user.isAnonymous,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      email: user.email || undefined,
+      name: extra.name ?? user.displayName ?? undefined,
+      phone: extra.phone,
+      company: extra.company,
+      isAnonymous: extra.isAnonymous ?? !!user.isAnonymous,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      // כל שדה נוסף שתרצה לשמור – רק אם מוגדר
       ...extra
-    }, { merge: true });
+    });
+
+    await ref.set(payload, { merge: true });
   }
 
   const signUpForm = document.getElementById("sign-up");
-  signUpForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const name     = document.getElementById("signup-name").value.trim();
-    const email    = document.getElementById("signup-email").value.trim();
-    const phone    = document.getElementById("signup-phone").value.trim();
-    const company  = document.getElementById("signup-company").value.trim();
-    const pass1    = document.getElementById("signup-password").value;
-    const pass2    = document.getElementById("signup-password2").value;
-    const fb       = document.getElementById("signup-feedback");
+  if (signUpForm) {
+    signUpForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name     = document.getElementById("signup-name").value.trim();
+      const email    = document.getElementById("signup-email").value.trim();
+      const phone    = document.getElementById("signup-phone").value.trim();
+      const company  = document.getElementById("signup-company").value.trim();
+      const pass1    = document.getElementById("signup-password").value;
+      const pass2    = document.getElementById("signup-password2").value;
+      const fb       = document.getElementById("signup-feedback");
 
-    if (pass1 !== pass2) {
-      fb.textContent = "❌ Passwords do not match";
-      return;
-    }
+      if (pass1 !== pass2) { fb.textContent = "❌ Passwords do not match"; return; }
 
-    fb.textContent = "Creating your account...";
-    try {
-      const cred = await usersAuth.createUserWithEmailAndPassword(email, pass1);
-      await cred.user.updateProfile({ displayName: name });
-      await upsertUserDoc(cred.user, { name, phone, company, isAnonymous: false });
-      fb.textContent = "✅ Account created! You are signed in.";
-    } catch (err) {
-      console.error(err);
-      fb.textContent = "❌ " + (err.message || "Sign up failed");
-    }
-  });
+      fb.textContent = "Creating your account...";
+      try {
+        const cred = await usersAuth.createUserWithEmailAndPassword(email, pass1);
+        await cred.user.updateProfile({ displayName: name });
+        await upsertUserDoc(cred.user, { name, phone, company, isAnonymous: false });
+        fb.textContent = "✅ Account created! You are signed in.";
+      } catch (err) {
+        console.error(err);
+        fb.textContent = "❌ " + (err.message || "Sign up failed");
+      }
+    });
+  }
 
   const signInForm = document.getElementById("sign-in");
-  signInForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("signin-email").value.trim();
-    const pass  = document.getElementById("signin-password").value;
-    const fb    = document.getElementById("signin-feedback");
-    const remember = document.getElementById("remember-me").checked;
+  if (signInForm) {
+    signInForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("signin-email").value.trim();
+      const pass  = document.getElementById("signin-password").value;
+      const fb    = document.getElementById("signin-feedback");
+      const remember = document.getElementById("remember-me").checked;
 
-    fb.textContent = "Signing you in...";
-    try {
-      await usersAuth.setPersistence(
-        remember ? firebase.auth.Auth.Persistence.LOCAL
-                 : firebase.auth.Auth.Persistence.SESSION
-      );
-      const cred = await usersAuth.signInWithEmailAndPassword(email, pass);
-      await upsertUserDoc(cred.user);
-      fb.textContent = "✅ Signed in";
-    } catch (err) {
-      console.error(err);
-      fb.textContent = "❌ " + (err.message || "Sign in failed");
-    }
-  });
+      fb.textContent = "Signing you in...";
+      try {
+        await usersAuth.setPersistence(
+          remember ? firebase.auth.Auth.Persistence.LOCAL
+                   : firebase.auth.Auth.Persistence.SESSION
+        );
+        const cred = await usersAuth.signInWithEmailAndPassword(email, pass);
 
-  document.getElementById("forgot-link").addEventListener("click", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("signin-email").value.trim();
-    if (!email) { alert("Enter your email above and click again."); return; }
-    try {
-      await usersAuth.sendPasswordResetEmail(email);
-      alert("Password reset email sent.");
-    } catch (err) {
-      alert("Failed: " + (err.message || "Unknown error"));
-    }
-  });
+        await ensureUserDoc(cred.user);
+
+        fb.textContent = "✅ Signed in";
+      } catch (err) {
+        console.error(err);
+        fb.textContent = "❌ " + (err.message || "Sign in failed");
+      }
+    });
+  }
+
+  const forgotLink = document.getElementById("forgot-link");
+  if (forgotLink) {
+    forgotLink.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("signin-email").value.trim();
+      if (!email) { alert("Enter your email above and click again."); return; }
+      try { await usersAuth.sendPasswordResetEmail(email); alert("Password reset email sent."); }
+      catch (err) { alert("Failed: " + (err.message || "Unknown error")); }
+    });
+  }
 
   const googleProvider = new firebase.auth.GoogleAuthProvider();
-  function googleFlow() {
-    usersAuth.signInWithPopup(googleProvider)
-      .then(async (cred) => {
-        await upsertUserDoc(cred.user, { isAnonymous: false });
+  async function googleFlow() {
+    try {
+      const useRedirect = window.matchMedia("(max-width: 640px)").matches;
+      if (useRedirect) {
+        await usersAuth.signInWithRedirect(googleProvider);
+      } else {
+        const cred = await usersAuth.signInWithPopup(googleProvider);
+        await upsertUserDoc(cred.user, { isAnonymous: false, name: cred.user.displayName });
         alert("Signed in with Google. Welcome " + (cred.user.displayName || ""));
-      })
-      .catch(err => alert("Google sign-in failed: " + (err.message || "")));
+      }
+    } catch (err) {
+      console.error("Google sign-in failed:", err);
+      alert("Google sign-in failed: " + (err.message || ""));
+    }
   }
-  document.getElementById("google-signin").addEventListener("click", googleFlow);
-  document.getElementById("google-signup").addEventListener("click", googleFlow);
+  document.getElementById("google-signin")?.addEventListener("click", googleFlow);
+  document.getElementById("google-signup")?.addEventListener("click", googleFlow);
 
-  usersAuth.onAuthStateChanged((user) => {
-    const welcome = document.getElementById("welcome-text");
-    const signInNav = document.getElementById("nav-SignIn");
+  usersAuth.onAuthStateChanged(async (user) => {
+    const welcome    = document.getElementById("welcome-text");
+    const signInNav  = document.getElementById("nav-SignIn");
+    const accountNav = document.getElementById("nav-Account");
 
     if (user) {
-      welcome.textContent = "👋 Welcome" + (user.displayName ? `, ${user.displayName}` : "");
+      await ensureUserDoc(user);
+
+      if (welcome) welcome.textContent = "👋 Welcome" + (user.displayName ? `, ${user.displayName}` : "");
       addOrUpdateSignOutButton();
 
-      if (signInNav) signInNav.style.display = "none";
+      if (signInNav)  signInNav.style.display  = "none";
+      if (accountNav) accountNav.style.display = "inline-block";
 
+      if (document.getElementById("UserArea")?.style.display !== "none") {
+        renderUserArea(user);
+      }
     } else {
-      welcome.textContent = "👋 Welcome";
+      if (welcome) welcome.textContent = "👋 Welcome";
       removeSignOutButton();
-
-      if (signInNav) signInNav.style.display = "inline-block";
+      if (signInNav)  signInNav.style.display  = "inline-block";
+      if (accountNav) accountNav.style.display = "none";
     }
   });
 
@@ -1294,6 +1406,9 @@
       e.preventDefault();
       await usersAuth.signOut();
       alert("Signed out");
+      document.querySelectorAll("body > *:not(header):not(footer)").forEach(el => el.style.display = "none");
+      document.querySelector(".main").style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
     nav.appendChild(a);
   }
@@ -1301,6 +1416,126 @@
     const a = document.getElementById("nav-SignOut");
     if (a) a.remove();
   }
+
+  async function renderUserArea(user) {
+    const nameEl    = document.getElementById("ua-name");
+    const emailEl   = document.getElementById("ua-email");
+    const phoneEl   = document.getElementById("ua-phone");
+    const companyEl = document.getElementById("ua-company");
+    const planP     = document.getElementById("ua-plan");
+    const tbody     = document.getElementById("ua-purchases");
+
+    if (!user) return;
+    if (emailEl) emailEl.value = user.email || "";
+    if (nameEl)  nameEl.value  = user.displayName || "";
+
+    try {
+      const doc = await usersDB.collection("users").doc(user.uid).get();
+      const profile = doc.exists ? doc.data() : {};
+      if (phoneEl)   phoneEl.value   = profile.phone   || "";
+      if (companyEl) companyEl.value = profile.company || "";
+      if (planP)     planP.textContent = profile.plan ? `Plan: ${profile.plan}` : "Plan: Free";
+
+      if (window.webDB && tbody) {
+        const qs = await window.webDB.collection("purchases")
+          .where("uid","==", user.uid)
+          .orderBy("timestamp","desc")
+          .limit(20)
+          .get();
+
+        if (qs.empty) {
+          tbody.innerHTML = '<tr><td style="padding:8px;" colspan="5">No purchases yet</td></tr>';
+        } else {
+          const rows = [];
+          qs.forEach(d => {
+            const p  = d.data();
+            const ts = p.timestamp?.toDate ? p.timestamp.toDate() : null;
+            const when = ts ? ts.toLocaleString() : "-";
+            rows.push(`
+              <tr>
+                <td style="padding:8px;border-bottom:1px solid #f3f4f6;">${when}</td>
+                <td style="padding:8px;border-bottom:1px solid #f3f4f6;">${p.plan || "-"}</td>
+                <td style="padding:8px;border-bottom:1px solid #f3f4f6;">${p.paymentMethod || "-"}</td>
+                <td style="padding:8px;border-bottom:1px solid #f3f4f6;">${p.price ?? "-"}</td>
+                <td style="padding:8px;border-bottom:1px solid #f3f4f6;">${p.last4Digits ? "•••• " + p.last4Digits : "-"}</td>
+              </tr>
+            `);
+          });
+          tbody.innerHTML = rows.join("");
+        }
+      }
+    } catch (e) {
+      console.error("renderUserArea failed:", e);
+      document.getElementById("ua-feedback").textContent = "❌ Failed to load account data";
+    }
+  }
+  window.renderUserArea = renderUserArea;
+
+  document.getElementById("ua-save")?.addEventListener("click", async () => {
+    const user = usersAuth.currentUser;
+    if (!user) return;
+    const fb = document.getElementById("ua-feedback");
+    fb.textContent = "Saving…";
+
+    const name    = document.getElementById("ua-name").value.trim();
+    const phone   = document.getElementById("ua-phone").value.trim();
+    const company = document.getElementById("ua-company").value.trim();
+
+    try {
+      if (name && name !== (user.displayName || "")) {
+        await user.updateProfile({ displayName: name });
+      }
+      await usersDB.collection("users").doc(user.uid).set(
+        pickDefined({
+          name, phone, company,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }),
+        { merge: true }
+      );
+      fb.textContent = "✅ Saved!";
+    } catch (e) {
+      console.error(e);
+      fb.textContent = "❌ Failed to save changes";
+    }
+  });
+
+  document.getElementById("ua-reset")?.addEventListener("click", async () => {
+    const user = usersAuth.currentUser;
+    if (!user?.email) { alert("No email on this account."); return; }
+    try { await usersAuth.sendPasswordResetEmail(user.email); alert("Password reset email sent."); }
+    catch (e) { alert("Failed: " + (e.message || "Unknown error")); }
+  });
+
+  document.getElementById("ua-delete")?.addEventListener("click", async () => {
+    const user = usersAuth.currentUser;
+    if (!user) return;
+    if (!confirm("Are you sure you want to delete your account? This action cannot be undone.")) return;
+
+    try {
+      if (user.email) {
+        const pass = prompt("Please confirm your password to continue:");
+        if (!pass) return;
+        const cred = firebase.auth.EmailAuthProvider.credential(user.email, pass);
+        await user.reauthenticateWithCredential(cred);
+      }
+      await user.delete();
+      alert("Account deleted.");
+      window.location.href = "index.html";
+    } catch (e) {
+      if (e.code === "auth/requires-recent-login") {
+        try {
+          await usersAuth.currentUser.reauthenticateWithPopup(new firebase.auth.GoogleAuthProvider());
+          await usersAuth.currentUser.delete();
+          alert("Account deleted.");
+          window.location.href = "index.html";
+        } catch (e2) {
+          alert("Failed to delete: " + (e2.message || ""));
+        }
+      } else {
+        alert("Failed: " + (e.message || ""));
+      }
+    }
+  });
 </script>
 
 <script type="module">
