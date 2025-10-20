@@ -1564,6 +1564,7 @@
     appId: "1:817765154697:web:c50354276e11368c4fab58",
     measurementId: "G-K3LCQT6MZM"
   };
+
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db   = firebase.firestore();
@@ -1687,7 +1688,6 @@
     if (!yy){ ok=false; setError(yearSel, "Select a year"); }
     if (!cvc){ ok=false; setError(cvcEl, "Enter CVC/CVV"); }
 
-    // 4) Luhn
     if (isCardBrand && cardNumber && !luhn(cardNumber)){
       ok=false; setError(ccEl, "Invalid card number");
     }
@@ -1718,12 +1718,17 @@
 
       await ensureAuth();
 
+      const modal     = document.getElementById("purchase-modal");
+      const companySel= document.getElementById("supported-company");
+      const rawCard   = (document.getElementById("creditCardInput").value || "").replace(/\s+/g, "");
+      const paymentMethod = (companySel.value || "").trim();
+
       const planName  = modal.querySelector(".plan-name")?.innerText || "Unknown";
       const priceText = modal.querySelector(".plan-price")?.innerText || "";
-      const match     = priceText.match(/\$([\d.]+)/);
-      const price     = match ? parseFloat(match[1]) : 0;
+      const m         = priceText.match(/\$([\d.]+)/);
+      const price     = m ? parseFloat(m[1]) : 0;
 
-      await db.collection("purchases").add({
+      const docRef = await db.collection("purchases").add({
         userName: appUser.displayName || "User",
         email: appUser.email || "",
         uidUsers: appUser.uid,
@@ -1731,7 +1736,7 @@
         plan: planName,
         price,
         paymentMethod,
-        last4Digits: onlyDigits(cardNumber).slice(-4),
+        last4Digits: (rawCard.replace(/\D+/g,"")).slice(-4),
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
 
@@ -1740,12 +1745,22 @@
           .set({ plan: planName, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
       } catch (_) {}
 
-      fb.innerText = "✅ Payment saved successfully!";
-      form.reset();
+      const receiptSnapshot = {
+        txId: docRef.id,
+        plan: planName,
+        price,
+        paymentMethod,
+        last4Digits: (rawCard.replace(/\D+/g,"")).slice(-4),
+        userName: appUser.displayName || "User",
+        email: appUser.email || "",
+        clientTime: new Date().toISOString()
+      };
+      sessionStorage.setItem("lastReceipt", JSON.stringify(receiptSnapshot));
 
-      if (document.getElementById("UserArea")?.style.display !== "none" && typeof window.renderUserArea === "function") {
-        window.renderUserArea(appUser);
-      }
+      fb.innerText = "✅ Payment saved successfully! Redirecting to receipt…";
+
+      window.location.href = `receipt.html?tx=${encodeURIComponent(docRef.id)}`;
+
     } catch (error) {
       console.error("❌ Error saving purchase:", error);
       fb.innerText = "❌ Failed to save your purchase: " + (error?.message || "");
