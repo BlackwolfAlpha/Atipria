@@ -9,6 +9,45 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="receipt.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    emailjs.init("JU3WF_cvPQycgSfmp");
+
+    const EMAILJS_SERVICE_ID          = "default_service";
+    const EMAILJS_TEMPLATE_PAYMENT_ID = "template_qqsprwo";
+
+    function buildReceiptUrl(txId) {
+      const base = window.location.origin + window.location.pathname.replace(/[^/]+$/, "");
+      return `${base}receipt.html?tx=${encodeURIComponent(txId)}`;
+    }
+
+    async function sendPaymentReceiptEmail({ txId, plan, price, paymentMethod, last4Digits, userName, email, dateISO }) {
+      if (!email) return;
+      const sentKey = `receipt_emailed_${txId}`;
+      if (sessionStorage.getItem(sentKey) === "1") return;
+
+      const params = {
+        to_name:        userName || "Customer",
+        to_email:       email,
+        plan:           plan || "",
+        amount:         typeof price === "number" ? `$${price.toFixed(2)}` : (price ?? ""),
+        payment_method: paymentMethod || "",
+        card_last4:     last4Digits ? `**** **** **** ${last4Digits}` : "",
+        tx_id:          txId,
+        date_str:       dateISO ? new Date(dateISO).toLocaleString() : "",
+        receipt_url:    buildReceiptUrl(txId),
+        from_name:      "Atipria"
+      };
+
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_PAYMENT_ID, params);
+        sessionStorage.setItem(sentKey, "1");
+      } catch (err) {
+        console.error("EmailJS receipt send failed:", err);
+      }
+    }
+  </script>
 </head>
 
 <body class="receipt-page">
@@ -78,6 +117,7 @@
     <p>&copy; 2025 InoviteFuture - Atipria, All rights reserved.</p>
   </footer>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -119,6 +159,17 @@
           $("buyer").textContent  = r.userName || "-";
           $("email").textContent  = r.email || "-";
           $("date").textContent   = toLocal(r.clientTime);
+
+          sendPaymentReceiptEmail({
+            txId: r.txId,
+            plan: r.plan,
+            price: r.price,
+            paymentMethod: r.paymentMethod,
+            last4Digits: r.last4Digits,
+            userName: r.userName,
+            email: r.email,
+            dateISO: r.clientTime
+          });
         }
       } catch {}
     })();
@@ -153,6 +204,17 @@
         $("email").textContent  = p.email || "-";
         const ts = p.timestamp?.toDate ? p.timestamp.toDate().toISOString() : null;
         $("date").textContent   = toLocal(ts);
+
+        sendPaymentReceiptEmail({
+          txId: snap.id,
+          plan: p.plan,
+          price: p.price,
+          paymentMethod: p.paymentMethod,
+          last4Digits: p.last4Digits,
+          userName: p.userName,
+          email: p.email,
+          dateISO: ts
+        });
 
       } catch (e) {
         console.error(e);
