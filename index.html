@@ -1130,8 +1130,25 @@
     }
 
     function installVersion(version) {
-        var filePath = "Versions/Atipria (" + version + ").rar";
-        window.location.href = filePath;
+      if (!window.usersAuth || !window.usersAuth.currentUser) {
+        if (window.showAuthPopup) {
+           window.showAuthPopup();
+        }
+
+        document.querySelectorAll("body > *:not(header):not(footer)").forEach(el => {
+          el.style.display = "none";
+        });
+        const signInSection = document.getElementById("SignIn");
+        if (signInSection) {
+          signInSection.style.display = "block";
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        return;
+      }
+
+      // במידה ונרצה להחזיר התקנה נמחק מפה את ההשבתה
+      // var filePath = "Versions/Atipria (" + version + ").rar";
+      // window.location.href = filePath;
     }
 
     function toggleComparison() {
