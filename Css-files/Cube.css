@@ -71,11 +71,9 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 800px) {
   .container {
     --w: 40px;
     margin-top: 180px;
   }
 }
-
-
